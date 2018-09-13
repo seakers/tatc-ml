@@ -1,0 +1,48 @@
+g++ -O3 -funroll-loops  -Wall -g -std=gnu++11 -Isrc -Isrc/json -c -o src/TATc_CostRisk.o src/TATc_CostRisk.cpp
+g++ -O3 -funroll-loops  -Wall -g -std=gnu++11 -Isrc -Isrc/json -c -o src/jsoncpp.o src/jsoncpp.cpp
+g++ -O3 -funroll-loops  -Wall -g -std=gnu++11 -Isrc -Isrc/json -c -o src/TATc_CaR_inputs.o src/TATc_CaR_inputs.cpp
+g++ -O3 -funroll-loops  -Wall -g -std=gnu++11 -Isrc -Isrc/json -c -o src/TATc_CaR_outputs.o src/TATc_CaR_outputs.cpp
+g++ -O3 -funroll-loops  -Wall -g -std=gnu++11 -Isrc -Isrc/json -c -o src/TATc_Cost_CBS.o src/TATc_Cost_CBS.cpp
+g++ -O3 -funroll-loops  -Wall -g -std=gnu++11 -Isrc -Isrc/json -c -o src/TATc_Cost_Obs.o src/TATc_Cost_Obs.cpp
+g++ -O3 -funroll-loops  -Wall -g -std=gnu++11 -Isrc -Isrc/json -c -o src/TATc_Cost_DSM.o src/TATc_Cost_DSM.cpp
+g++ -O3 -funroll-loops  -Wall -g -std=gnu++11 /usr/lib/libstdc++.6.dylib -headerpad_max_install_names -lm -v  src/TATc_CostRisk.o src/jsoncpp.o src/TATc_CaR_inputs.o src/TATc_CaR_outputs.o src/TATc_Cost_CBS.o src/TATc_Cost_Obs.o src/TATc_Cost_DSM.o -o bin/TATc_CostRisk
+Apple LLVM version 8.0.0 (clang-800.0.42.1)
+Target: x86_64-apple-darwin15.6.0
+Thread model: posix
+InstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
+ "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld" -demangle -dynamic -arch x86_64 -headerpad_max_install_names -macosx_version_min 10.12.0 -syslibroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk -o bin/TATc_CostRisk /usr/lib/libstdc++.6.dylib -lm src/TATc_CostRisk.o src/jsoncpp.o src/TATc_CaR_inputs.o src/TATc_CaR_outputs.o src/TATc_Cost_CBS.o src/TATc_Cost_Obs.o src/TATc_Cost_DSM.o -lc++ -lSystem /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/8.0.0/lib/darwin/libclang_rt.osx.a
+g++ -O3 -funroll-loops  -Wall -g -std=gnu++11 -Isrc -Isrc/json -c -o unitTest/TATc_CaR_inputs_unitTest.o unitTest/TATc_CaR_inputs_unitTest.cpp
+g++ -O3 -funroll-loops  -Wall -g -std=gnu++11 /usr/lib/libstdc++.6.dylib -headerpad_max_install_names -lm -v  unitTest/TATc_CaR_inputs_unitTest.o src/jsoncpp.o src/TATc_CaR_inputs.o src/TATc_CaR_outputs.o src/TATc_Cost_CBS.o src/TATc_Cost_Obs.o src/TATc_Cost_DSM.o -o bin/TATc_CaR_inputs_unitTest
+Apple LLVM version 8.0.0 (clang-800.0.42.1)
+Target: x86_64-apple-darwin15.6.0
+Thread model: posix
+InstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
+ "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld" -demangle -dynamic -arch x86_64 -headerpad_max_install_names -macosx_version_min 10.12.0 -syslibroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk -o bin/TATc_CaR_inputs_unitTest /usr/lib/libstdc++.6.dylib -lm unitTest/TATc_CaR_inputs_unitTest.o src/jsoncpp.o src/TATc_CaR_inputs.o src/TATc_CaR_outputs.o src/TATc_Cost_CBS.o src/TATc_Cost_Obs.o src/TATc_Cost_DSM.o -lc++ -lSystem /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/8.0.0/lib/darwin/libclang_rt.osx.a
+g++ -O3 -funroll-loops  -Wall -g -std=gnu++11 -Isrc -Isrc/json -c -o unitTest/TATc_CaR_outputs_unitTest.o unitTest/TATc_CaR_outputs_unitTest.cpp
+g++ -O3 -funroll-loops  -Wall -g -std=gnu++11 /usr/lib/libstdc++.6.dylib -headerpad_max_install_names -lm -v  unitTest/TATc_CaR_outputs_unitTest.o src/jsoncpp.o src/TATc_CaR_inputs.o src/TATc_CaR_outputs.o src/TATc_Cost_CBS.o src/TATc_Cost_Obs.o src/TATc_Cost_DSM.o -o bin/TATc_CaR_outputs_unitTest
+Apple LLVM version 8.0.0 (clang-800.0.42.1)
+Target: x86_64-apple-darwin15.6.0
+Thread model: posix
+InstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
+ "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld" -demangle -dynamic -arch x86_64 -headerpad_max_install_names -macosx_version_min 10.12.0 -syslibroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk -o bin/TATc_CaR_outputs_unitTest /usr/lib/libstdc++.6.dylib -lm unitTest/TATc_CaR_outputs_unitTest.o src/jsoncpp.o src/TATc_CaR_inputs.o src/TATc_CaR_outputs.o src/TATc_Cost_CBS.o src/TATc_Cost_Obs.o src/TATc_Cost_DSM.o -lc++ -lSystem /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/8.0.0/lib/darwin/libclang_rt.osx.a
+g++ -O3 -funroll-loops  -Wall -g -std=gnu++11 -Isrc -Isrc/json -c -o unitTest/TATc_Cost_CBS_unitTest.o unitTest/TATc_Cost_CBS_unitTest.cpp
+g++ -O3 -funroll-loops  -Wall -g -std=gnu++11 /usr/lib/libstdc++.6.dylib -headerpad_max_install_names -lm -v  unitTest/TATc_Cost_CBS_unitTest.o src/jsoncpp.o src/TATc_CaR_inputs.o src/TATc_CaR_outputs.o src/TATc_Cost_CBS.o src/TATc_Cost_Obs.o src/TATc_Cost_DSM.o -o bin/TATc_Cost_CBS_unitTest
+Apple LLVM version 8.0.0 (clang-800.0.42.1)
+Target: x86_64-apple-darwin15.6.0
+Thread model: posix
+InstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
+ "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld" -demangle -dynamic -arch x86_64 -headerpad_max_install_names -macosx_version_min 10.12.0 -syslibroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk -o bin/TATc_Cost_CBS_unitTest /usr/lib/libstdc++.6.dylib -lm unitTest/TATc_Cost_CBS_unitTest.o src/jsoncpp.o src/TATc_CaR_inputs.o src/TATc_CaR_outputs.o src/TATc_Cost_CBS.o src/TATc_Cost_Obs.o src/TATc_Cost_DSM.o -lc++ -lSystem /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/8.0.0/lib/darwin/libclang_rt.osx.a
+g++ -O3 -funroll-loops  -Wall -g -std=gnu++11 -Isrc -Isrc/json -c -o unitTest/TATc_Cost_Obs_unitTest.o unitTest/TATc_Cost_Obs_unitTest.cpp
+g++ -O3 -funroll-loops  -Wall -g -std=gnu++11 /usr/lib/libstdc++.6.dylib -headerpad_max_install_names -lm -v  unitTest/TATc_Cost_Obs_unitTest.o src/jsoncpp.o src/TATc_CaR_inputs.o src/TATc_CaR_outputs.o src/TATc_Cost_CBS.o src/TATc_Cost_Obs.o src/TATc_Cost_DSM.o -o bin/TATc_Cost_Obs_unitTest
+Apple LLVM version 8.0.0 (clang-800.0.42.1)
+Target: x86_64-apple-darwin15.6.0
+Thread model: posix
+InstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
+ "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld" -demangle -dynamic -arch x86_64 -headerpad_max_install_names -macosx_version_min 10.12.0 -syslibroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk -o bin/TATc_Cost_Obs_unitTest /usr/lib/libstdc++.6.dylib -lm unitTest/TATc_Cost_Obs_unitTest.o src/jsoncpp.o src/TATc_CaR_inputs.o src/TATc_CaR_outputs.o src/TATc_Cost_CBS.o src/TATc_Cost_Obs.o src/TATc_Cost_DSM.o -lc++ -lSystem /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/8.0.0/lib/darwin/libclang_rt.osx.a
+g++ -O3 -funroll-loops  -Wall -g -std=gnu++11 -Isrc -Isrc/json -c -o unitTest/TATc_Cost_DSM_unitTest.o unitTest/TATc_Cost_DSM_unitTest.cpp
+g++ -O3 -funroll-loops  -Wall -g -std=gnu++11 /usr/lib/libstdc++.6.dylib -headerpad_max_install_names -lm -v  unitTest/TATc_Cost_DSM_unitTest.o src/jsoncpp.o src/TATc_CaR_inputs.o src/TATc_CaR_outputs.o src/TATc_Cost_CBS.o src/TATc_Cost_Obs.o src/TATc_Cost_DSM.o -o bin/TATc_Cost_DSM_unitTest
+Apple LLVM version 8.0.0 (clang-800.0.42.1)
+Target: x86_64-apple-darwin15.6.0
+Thread model: posix
+InstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
+ "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld" -demangle -dynamic -arch x86_64 -headerpad_max_install_names -macosx_version_min 10.12.0 -syslibroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk -o bin/TATc_Cost_DSM_unitTest /usr/lib/libstdc++.6.dylib -lm unitTest/TATc_Cost_DSM_unitTest.o src/jsoncpp.o src/TATc_CaR_inputs.o src/TATc_CaR_outputs.o src/TATc_Cost_CBS.o src/TATc_Cost_Obs.o src/TATc_Cost_DSM.o -lc++ -lSystem /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/8.0.0/lib/darwin/libclang_rt.osx.a

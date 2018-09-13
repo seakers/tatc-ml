@@ -1,0 +1,68 @@
+{
+    "lifecycleCost": {
+        "estimate": 1234,
+        "standardError": 23,
+        "fiscalYear": 1984
+    },
+    "hardwareCost": {
+        "estimate": 2234,
+        "standardError": 34,
+        "fiscalYear": 1990
+    },
+    "iatCost": {
+        "estimate": 3234,
+        "standardError": 45,
+        "fiscalYear": 2005
+    },
+    "programCost": {
+        "estimate": 4234,
+        "standardError": 56,
+        "fiscalYear": 2010
+    },
+    "groundCost": {
+        "estimate": 5234,
+        "standardError": 67,
+        "fiscalYear": 1970
+    },
+    "launchCost": {
+        "estimate": 6234,
+        "standardError": 78,
+        "fiscalYear": 1776
+    },
+    "operationsCost": {
+        "estimate": 7234,
+        "standardError": 89,
+        "fiscalYear": 1977
+    },
+    "nonRecurringCost": {
+        "estimate": 8234,
+        "standardError": 90,
+        "fiscalYear": 2016
+    },
+    "recurringCost": {
+        "estimate": 9234,
+        "standardError": 91,
+        "fiscalYear": 2017
+    },
+    "spacecraftRank": [
+        {
+            "spacecraftIndex": 0,
+            "totalCost": 5527,
+            "fiscalYear": 2014,
+            "rank": 3
+        },
+        {
+            "spacecraftIndex": 1,
+            "totalCost": 13270,
+            "fiscalYear": 2013,
+            "rank": 1
+        },
+        {
+            "spacecraftIndex": 2,
+            "totalCost": 4434,
+            "fiscalYear": 2012,
+            "rank": 2
+        }
+    ]
+}
+

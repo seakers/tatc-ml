@@ -1,0 +1,84 @@
+{
+	"groundCost" : 
+	{
+		"estimate" : 124922.97811134004,
+		"fiscalYear" : 2016,
+		"standardError" : 42473.812557855614
+	},
+	"hardwareCost" : 
+	{
+		"estimate" : 504507.2313595172,
+		"fiscalYear" : 2016,
+		"standardError" : 73655.431420138062
+	},
+	"iatCost" : 
+	{
+		"estimate" : 356560.49227369815,
+		"fiscalYear" : 2016,
+		"standardError" : 119319.55836427009
+	},
+	"launchCost" : 
+	{
+		"estimate" : 60195.519999999997,
+		"fiscalYear" : 2016,
+		"standardError" : 25282.118399999996
+	},
+	"lifecycleCost" : 
+	{
+		"estimate" : 1448853.2759788122,
+		"fiscalYear" : 2016,
+		"standardError" : 187608.06110905786
+	},
+	"nonRecurringCost" : 
+	{
+		"estimate" : 857548.52907827112,
+		"fiscalYear" : 2016,
+		"standardError" : 160719.18261773375
+	},
+	"operationsCost" : 
+	{
+		"estimate" : 3996.1827639829971,
+		"fiscalYear" : 2016,
+		"standardError" : 850.27558758848011
+	},
+	"programCost" : 
+	{
+		"estimate" : 402667.05423425691,
+		"fiscalYear" : 2016,
+		"standardError" : 114417.19601168956
+	},
+	"recurringCost" : 
+	{
+		"estimate" : 591304.74690054124,
+		"fiscalYear" : 2016,
+		"standardError" : 96778.762813891779
+	},
+	"spacecraftRank" : 
+	[
+		{
+			"fiscalYear" : 2016,
+			"rank" : 1,
+			"spacecraftIndex" : 0,
+			"totalCost" : 241927.49694666156
+		},
+		{
+			"fiscalYear" : 2016,
+			"rank" : 2,
+			"spacecraftIndex" : 1,
+			"totalCost" : 241927.49694666156
+		},
+		{
+			"fiscalYear" : 2016,
+			"rank" : 3,
+			"spacecraftIndex" : 2,
+			"totalCost" : 241927.49694666156
+		},
+		{
+			"fiscalYear" : 2016,
+			"rank" : 4,
+			"spacecraftIndex" : 3,
+			"totalCost" : 241927.49694666156
+		}
+	]
+}
+

@@ -1,0 +1,5 @@
+Meta:,"Description of subspace, including startTime. t0 is s after startTime, t1 is s after t0.",,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Summ:,"During each time, DSM constellation global performance is summarized by these statistics.",,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Time,[s],TimeToCoverage,[s],,AccessTime,[s],,RevisitTime,[s],,Coverage,NumOfPOIpasses,[#],,DownLinkLatency,[s],,NumGSpassesPD,TotalDownlinkTimePD [s],DownlinkTimePerPass [s],,,CrossOverlap,[%],,AlongOverlap,[%],,LunarPhase,[deg],
+t0,t1,TCavg,TCmin,TCmax,ATavg,ATmin,ATCmax,RTavg,RTmin,RTmax,% Grid Covered,PASavg,PASmin,PASmax,DLavg,DLmin,DLmax,PassesPerDay,DLTimePerDay,DLTavg,DLTmin,DLTmax,COavg,COmin,COmax,AOavg,AOmin,AOmax,LPavg,LPmin,LPmax
+0,604800.0,,,,56.796990300002655,1.7047422811156139,62.20880279946141,24943.024699310565,262.4064302500958,91056.4905985517,,23.194444444444443,16.0,28.0,,,,3.4285714285714284,843.2026712580757,245.9341124502721,71.36237291558064,314.27107973000966,,,,,,,
