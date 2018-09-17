@@ -25,10 +25,10 @@
       },
       "satelliteOrbit": {
         "startEcc": 0.0,
-        "startIncl": 36.66666666666667,
-        "startSMA": 6853.137,
+        "startIncl": 31.66666666666667,
+        "startSMA": 6828.137,
         "startPer": 0.0,
-        "startRAAN": 180.0,
+        "startRAAN": 0.0,
         "startTrueA": 0.0
       },
       "observatorySpecification": {
@@ -88,11 +88,11 @@
       },
       "satelliteOrbit": {
         "startEcc": 0.0,
-        "startIncl": 36.66666666666667,
-        "startSMA": 6853.137,
+        "startIncl": 31.66666666666667,
+        "startSMA": 6828.137,
         "startPer": 0.0,
         "startRAAN": 0.0,
-        "startTrueA": 0.0
+        "startTrueA": 180.0
       },
       "observatorySpecification": {
         "startMass": 2200.0,

@@ -109,7 +109,7 @@ public class TATC {
         // 1 - MOEA without AOS
         // 2 - MOEA with offline AOS
         // 3 - MOEA with online AOS
-        int options = 3;
+        int options = 1;
 
         if (options == 0) {
 
