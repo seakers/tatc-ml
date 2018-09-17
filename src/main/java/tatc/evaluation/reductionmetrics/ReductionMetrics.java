@@ -340,7 +340,7 @@ public class ReductionMetrics extends AbstractModule {
             for (GndStation gnd : gndStation) {
                 TopocentricFrame point = gnd.getBaseFrame();
                 keys.add(point);
-                accesses = gndStn.getEvents(true, keys, properties);
+                accesses = gndStn.getEvents(keys);
             }
             
             this.updateJSON();
