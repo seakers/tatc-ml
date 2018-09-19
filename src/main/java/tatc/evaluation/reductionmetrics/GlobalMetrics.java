@@ -11,8 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import seak.orekit.coverage.analysis.AnalysisMetric;
-import seak.orekit.coverage.analysis.GroundEventAnalyzer;
+import seakers.orekit.coverage.analysis.AnalysisMetric;
+import seakers.orekit.coverage.analysis.GroundEventAnalyzer;
 
 /**
  * Global Metrics saved for imaging missions architectures

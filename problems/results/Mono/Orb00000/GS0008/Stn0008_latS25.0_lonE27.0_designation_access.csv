@@ -1,0 +1,9 @@
+Meta:,"Description of ground station accesses for subspace/Obs, including startTime. t0 is s after startTime, t1 is s after t0."
+Summ:,"During each time, Obs has known orbit Keplerian model and statistics."
+Time,[s]
+t0,t1
+34338.75146761149,34534.38931396662
+141015.1076951647,141259.5345141975
+200650.34854568116,200829.72273232616
+230017.69783822668,230259.4064525817
+289608.60159280617,289865.58746601327

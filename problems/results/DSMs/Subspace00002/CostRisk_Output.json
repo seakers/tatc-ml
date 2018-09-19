@@ -1,0 +1,47 @@
+{
+  "groundCost": {
+    "estimate": 82868.34739618655,
+    "fiscalYear": 2010,
+    "standardError": 0.0
+  },
+  "hardwareCost": {
+    "estimate": 116843.7315028342,
+    "fiscalYear": 2010,
+    "standardError": 0.0
+  },
+  "iatCost": {
+    "estimate": 55293.766201242775,
+    "fiscalYear": 2010,
+    "standardError": 0.0
+  },
+  "launchCost": {
+    "estimate": 100.0,
+    "fiscalYear": 2010,
+    "standardError": 0.0
+  },
+  "lifecycleCost": {
+    "estimate": 523.0833328518681,
+    "fiscalYear": 2010,
+    "standardError": 0.0
+  },
+  "nonRecurringCost": {
+    "estimate": 9402.508248260447,
+    "fiscalYear": 2010,
+    "standardError": 0.0
+  },
+  "operationsCost": {
+    "estimate": 82868.34739618655,
+    "fiscalYear": 2010,
+    "standardError": 0.0
+  },
+  "programCost": {
+    "estimate": 82699.54413063842,
+    "fiscalYear": 2010,
+    "standardError": 0.0
+  },
+  "recurringCost": {
+    "estimate": 192819.16687553993,
+    "fiscalYear": 2010,
+    "standardError": 0.0
+  }
+}

@@ -6,7 +6,7 @@
 package tatc.architecture.specifications;
 
 import java.util.Objects;
-import seak.orekit.util.Units;
+import seakers.orekit.util.Units;
 
 
 public class ObservatorySpecification {

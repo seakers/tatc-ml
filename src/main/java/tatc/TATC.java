@@ -110,7 +110,7 @@ public class TATC {
         // 1 - MOEA without AOS
         // 2 - MOEA with offline AOS
         // 3 - MOEA with online AOS
-        int options = 0;
+        int options = 3;
 
         if (options == 0) {
 
@@ -137,6 +137,8 @@ public class TATC {
                     populationSize);
             Population population = new Population();
             DominanceComparator comparator = new ParetoDominanceComparator();
+            
+            //read nozomi's paper to see what values to use as epsilon
             EpsilonBoxDominanceArchive archive = new EpsilonBoxDominanceArchive(new double[]{60, 10});
             final TournamentSelection selection = new TournamentSelection(2, comparator);
 
@@ -239,8 +241,6 @@ public class TATC {
         
         else if(options == 3){
 
-            String innovizeAssignment = "_" + System.nanoTime();
-            
             //initialize problem
             StandardFormProblemGA problem = new StandardFormProblemGA(tsr, properties);
             
@@ -317,7 +317,7 @@ public class TATC {
             AOSMOEA aos3 = new AOSMOEA(emoea3, aosStrategy3, true);
             AbstractPopulationLabeler labeler = new NondominatedSortingLabeler(.25);
             //ecs.submit(new KDOSearch(aos3, typProperties, labeler, ops, new File(mainPath.getParent(), "results").getAbsolutePath() + File.separator + "result", innovizeAssignment));
-            KDOSearch kdo = new KDOSearch(aos3, typProperties, labeler, ops, new File(mainPath.getParent(), "results").getAbsolutePath() + File.separator + "result", innovizeAssignment);
+            KDOSearch kdo = new KDOSearch(aos3, typProperties, labeler, ops, new File(mainPath.getParent(), "results").getAbsolutePath() + File.separator + "result", "mining");
             try {
                 kdo.call();
             } catch (Exception ex) {

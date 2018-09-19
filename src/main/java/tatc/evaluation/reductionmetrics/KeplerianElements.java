@@ -12,7 +12,7 @@ import org.orekit.frames.FramesFactory;
 import org.orekit.orbits.KeplerianOrbit;
 import org.orekit.orbits.PositionAngle;
 import org.orekit.utils.Constants;
-import seak.orekit.util.Units;
+import seakers.orekit.util.Units;
 import tatc.architecture.specifications.SatelliteOrbitSpecification;
 import tatc.architecture.variable.MonolithVariable;
 

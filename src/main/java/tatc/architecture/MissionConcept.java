@@ -20,8 +20,8 @@ import org.orekit.bodies.GeodeticPoint;
 import org.orekit.errors.OrekitException;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
-import seak.orekit.object.CoverageDefinition;
-import seak.orekit.object.CoveragePoint;
+import seaker.orekit.object.CoverageDefinition;
+import seaker.orekit.object.CoveragePoint;
 import tatc.architecture.specifications.GroundStationSpecification;
 
 /**

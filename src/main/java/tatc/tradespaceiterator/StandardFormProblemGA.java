@@ -28,7 +28,7 @@ import org.moeaframework.problem.AbstractProblem;
 import org.orekit.errors.OrekitException;
 import org.orekit.utils.Constants;
 import seakers.conMOP.util.Bounds;
-import seak.orekit.util.Units;
+import seakers.orekit.util.Units;
 import org.moeaframework.core.variable.RealVariable;
 import seakers.conMOP.util.Factor;
 import tatc.evaluation.costandrisk.Constellation;

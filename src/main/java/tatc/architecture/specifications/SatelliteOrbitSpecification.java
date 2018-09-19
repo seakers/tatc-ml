@@ -5,7 +5,7 @@
  */
 package tatc.architecture.specifications;
 
-import seak.orekit.util.Units;
+import seakers.orekit.util.Units;
 
 
 /**

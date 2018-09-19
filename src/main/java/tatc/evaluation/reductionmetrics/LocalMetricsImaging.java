@@ -14,9 +14,9 @@ import java.util.Map;
 import java.util.Properties;
 import org.apache.commons.math3.util.FastMath;
 import org.hipparchus.stat.descriptive.DescriptiveStatistics;
-import seak.orekit.coverage.analysis.AnalysisMetric;
-import seak.orekit.coverage.analysis.GroundEventAnalyzer;
-import seak.orekit.object.CoveragePoint;
+import seakers.orekit.coverage.analysis.AnalysisMetric;
+import seakers.orekit.coverage.analysis.GroundEventAnalyzer;
+import seaker.orekit.object.CoveragePoint;
 
 /**
  * Metrics for each point

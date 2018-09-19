@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import seak.orekit.analysis.Record;
+import seakers.orekit.analysis.Record;
 
 /**
  * Coarse orbit propagation metrics saved for observatories

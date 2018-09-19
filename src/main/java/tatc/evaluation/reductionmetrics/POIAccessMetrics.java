@@ -10,8 +10,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import seak.orekit.coverage.access.RiseSetTime;
-import seak.orekit.coverage.access.TimeIntervalArray;
+import seakers.orekit.coverage.access.RiseSetTime;
+import seakers.orekit.coverage.access.TimeIntervalArray;
 
 /**
  * Coverage information for point of interest
