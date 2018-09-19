@@ -8,7 +8,7 @@ package tatc.architecture;
 import java.util.HashSet;
 import java.util.Set;
 import org.moeaframework.core.Solution;
-import seak.conmop.variable.SatelliteVariable;
+import seakers.conMOP.variable.SatelliteVariable;
 import tatc.architecture.variable.DSMVariable;
 import tatc.architecture.variable.MonolithVariable;
 

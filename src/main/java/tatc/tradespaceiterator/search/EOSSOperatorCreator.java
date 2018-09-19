@@ -5,7 +5,7 @@
  */
 package tatc.tradespaceiterator.search;
 
-import aos.operatorselectors.replacement.OperatorCreator;
+import seakers.aos.operatorselectors.replacement.OperatorCreator;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;

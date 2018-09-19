@@ -5,10 +5,10 @@
  */
 package tatc.tradespaceiterator.search;
 
-import aos.aos.AOS;
-import aos.history.AOSHistoryIO;
-import aos.operatorselectors.replacement.OperatorReplacementStrategy;
-import seak.architecture.io.ResultIO;
+import seakers.aos.aos.AOS;
+import seakers.aos.history.AOSHistoryIO;
+import seakers.aos.operatorselectors.replacement.OperatorReplacementStrategy;
+import seakers.architecture.io.ResultIO;
 import java.io.File;
 import java.util.Collection;
 import java.util.HashSet;

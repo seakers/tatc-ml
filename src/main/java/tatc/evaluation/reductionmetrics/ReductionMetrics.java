@@ -385,13 +385,18 @@ public class ReductionMetrics extends AbstractModule {
 
                 //write ground station specs to json file 
                 JsonObject station = new JsonObject();
-                station.addProperty("commBandTypes", Arrays.toString(gnd.getCommBandType()).replaceAll("\\[|\\]|,|\\s", ""));
-                station.addProperty("designation", gnd.getDesignated());
+                
+                String commBand = "";
+                for (CommunicationBand band : gnd.getReceiver().getBands()){
+                    commBand = commBand + band.name();
+                }
+                station.addProperty("commBandTypes", commBand);
+                station.addProperty("designation", "0.0");
                 station.addProperty("lat", Math.toDegrees(gnd.getBaseFrame().getPoint().getLatitude()));
                 station.addProperty("lon", Math.toDegrees(gnd.getBaseFrame().getPoint().getLongitude()));
 
                 JsonObject jsonGroundNetwork = new JsonObject();
-                jsonGroundNetwork.addProperty("designation", gnd.getDesignated());
+                jsonGroundNetwork.addProperty("designation", "0.0");
                 jsonGroundNetwork.add("station", station);
 
                 String gndStnSpecsStr = gson.toJson(jsonGroundNetwork);
@@ -546,7 +551,7 @@ public class ReductionMetrics extends AbstractModule {
             TransmitterAntenna transmitter = new TransmitterAntenna(1., bands);
 
             try {
-                GndStation gndStn = new GndStation(tpt, receiver, transmitter, Units.deg2rad(20), spec.getDesignated(), spec.getCommBandType());
+                GndStation gndStn = new GndStation(tpt, receiver, transmitter, Units.deg2rad(20));
                 out.add(gndStn);
 
             } catch (OrekitException ex) {

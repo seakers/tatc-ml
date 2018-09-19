@@ -10,18 +10,19 @@ package tatc;
  * @author Prachichi
  */
 
-import aos.aos.AOSMOEA;
-import aos.creditassignment.setimprovement.SetImprovementDominance;
-import aos.history.AOSHistoryIO;
-import aos.operator.AOSVariation;
-import aos.operator.AOSVariationSI;
-import aos.operatorselectors.AdaptivePursuit;
-import aos.operatorselectors.OperatorSelector;
-import aos.operatorselectors.replacement.EpochTrigger;
-import aos.operatorselectors.replacement.InitialTrigger;
-import aos.operatorselectors.replacement.OperatorReplacementStrategy;
-import aos.operatorselectors.replacement.RemoveNLowest;
-import aos.operatorselectors.replacement.ReplacementTrigger;
+import seakers.aos.aos.AOSMOEA;
+import seakers.aos.creditassignment.setimprovement.SetImprovementDominance;
+import seakers.aos.history.AOSHistoryIO;
+import seakers.aos.operator.AOSVariation;
+import seakers.aos.operator.AOSVariationSI;
+import seakers.aos.operatorselectors.AdaptivePursuit;
+import seakers.aos.operatorselectors.OperatorSelector;
+import seakers.aos.operatorselectors.replacement.EpochTrigger;
+import seakers.aos.operatorselectors.replacement.InitialTrigger;
+import seakers.aos.operatorselectors.replacement.OperatorReplacementStrategy;
+import seakers.aos.operatorselectors.replacement.RemoveNLowest;
+import seakers.aos.operatorselectors.replacement.ReplacementTrigger;
+import seakers.aos.operatorselectors.replacement.CompoundTrigger;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -52,7 +53,7 @@ import org.moeaframework.core.operator.TwoPointCrossover;
 import org.moeaframework.core.operator.UniformCrossover;
 import org.moeaframework.core.operator.binary.BitFlip;
 import org.moeaframework.util.TypedProperties;
-import seak.architecture.operators.IntegerUM;
+import seakers.architecture.operators.IntegerUM;
 import tatc.tradespaceiterator.TradespaceSearchRequest;
 import tatc.util.JSONIO;
 import tatc.tradespaceiterator.StandardFormProblemFullFact;
@@ -96,7 +97,7 @@ public class TATC {
         System.setProperty("tatc.moea", new File(mainPath.getParent(), "results").getAbsolutePath());
 
         Properties properties = new Properties();
-        System.setProperty("tatc.numThreads", "16");
+        System.setProperty("tatc.numThreads", "1");
 
         TradespaceSearchRequest tsr = JSONIO.readJSON(
                 new File(mainPath, "TradespaceSearchRequest.json"),
@@ -109,7 +110,7 @@ public class TATC {
         // 1 - MOEA without AOS
         // 2 - MOEA with offline AOS
         // 3 - MOEA with online AOS
-        int options = 1;
+        int options = 0;
 
         if (options == 0) {
 
@@ -265,7 +266,7 @@ public class TATC {
             final TournamentSelection selection = new TournamentSelection(2, comparator);
             
             //setup for innovization
-            int epochLength = 1000; //for learning rate
+            int epochLength = 3; //for learning rate
             int triggerOffset = 3;
             typProperties.setInt("nOpsToAdd", 4);
             typProperties.setInt("nOpsToRemove", 4);
@@ -295,7 +296,7 @@ public class TATC {
             //set up OperatorReplacementStrategy
             EpochTrigger epochTrigger = new EpochTrigger(epochLength, triggerOffset);
             InitialTrigger initTrigger = new InitialTrigger(triggerOffset);
-            aos.operatorselectors.replacement.CompoundTrigger compTrigger = new aos.operatorselectors.replacement.CompoundTrigger(Arrays.asList(new ReplacementTrigger[]{epochTrigger, initTrigger}));
+            CompoundTrigger compTrigger = new CompoundTrigger(Arrays.asList(new ReplacementTrigger[]{epochTrigger, initTrigger}));
             knowledge.operator.EOSSOperatorCreator eossOpCreator = new knowledge.operator.EOSSOperatorCreator();
             ArrayList<Variation> permanentOps = new ArrayList();
             permanentOps.add(SinglePointCross);

@@ -7,8 +7,8 @@ package tatc.architecture.variable;
 
 import org.moeaframework.core.PRNG;
 import org.moeaframework.core.Variable;
-import seak.conmop.util.Bounds;
-import seak.conmop.variable.SatelliteVariable;
+import seakers.conMOP.util.Bounds;
+import seakers.conMOP.variable.SatelliteVariable;
 
 /**
  * Variable for a monolithic satellite

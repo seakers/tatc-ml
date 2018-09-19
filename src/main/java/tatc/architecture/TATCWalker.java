@@ -7,7 +7,7 @@ package tatc.architecture;
 
 import java.util.HashSet;
 import org.hipparchus.util.FastMath;
-import seak.conmop.util.Bounds;
+import seakers.conMOP.util.Bounds;
 import tatc.architecture.variable.MonolithVariable;
 
 /**

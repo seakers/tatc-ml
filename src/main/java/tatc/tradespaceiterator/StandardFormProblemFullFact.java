@@ -22,7 +22,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.hipparchus.util.FastMath;
 import org.orekit.errors.OrekitException;
 import org.orekit.utils.Constants;
-import seak.conmop.util.Bounds;
+import seakers.conMOP.util.Bounds;
 import seak.orekit.constellations.EnumerateWalkerConstellations;
 import seak.orekit.constellations.WalkerParameters;
 import seak.orekit.util.Units;
