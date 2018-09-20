@@ -51,12 +51,12 @@ import seakers.orekit.event.EventAnalysisFactory;
 import seakers.orekit.event.FieldOfViewEventAnalysis;
 import seakers.orekit.event.GndStationEventAnalysis;
 import seakers.orekit.event.GroundEventAnalysis;
-import seaker.orekit.object.CommunicationBand;
-import seaker.orekit.object.Constellation;
-import seaker.orekit.object.CoverageDefinition;
-import seaker.orekit.object.GndStation;
-import seaker.orekit.object.Instrument;
-import seaker.orekit.object.Satellite;
+import seakers.orekit.object.CommunicationBand;
+import seakers.orekit.object.Constellation;
+import seakers.orekit.object.CoverageDefinition;
+import seakers.orekit.object.GndStation;
+import seakers.orekit.object.Instrument;
+import seakers.orekit.object.Satellite;
 import seakers.orekit.object.communications.ReceiverAntenna;
 import seakers.orekit.object.communications.Transmitter;
 import seakers.orekit.object.communications.TransmitterAntenna;
@@ -75,7 +75,6 @@ import tatc.util.JSONIO;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
 
 /**
  * The reduction and metrics module
@@ -242,10 +241,10 @@ public class ReductionMetrics extends AbstractModule {
         FieldOfViewEventAnalysis fovEventAnalysis = new FieldOfViewEventAnalysis(startDate, endDate, inertialFrame, cdefs, propatagorFactory, true, false);
         eventAnalyses.add(fovEventAnalysis);
         
-        ArrayList<Analysis> analyses = new ArrayList<>();
+        ArrayList<Analysis<?>> analyses = new ArrayList<>();
         HashMap<Analysis, Satellite> anaToSat = new HashMap<>();
         for (final Satellite sat : constel.getSatellites()){
-            Collection<AbstractSpacecraftAnalysis> abstractAnalysis = new ArrayList<>();
+            Collection<AbstractSpacecraftAnalysis<?>> abstractAnalysis = new ArrayList<>();
             abstractAnalysis.add(new OrbitalElementsAnalysis(startDate, endDate, analysisTimeStep, sat, PositionAngle.MEAN, this.propatagorFactory));
             abstractAnalysis.add(new VectorAnalysis(startDate, endDate, analysisTimeStep, sat, this.propatagorFactory, inertialFrame) {
                 
