@@ -16,7 +16,7 @@ import org.apache.commons.math3.util.FastMath;
 import org.hipparchus.stat.descriptive.DescriptiveStatistics;
 import seakers.orekit.coverage.analysis.AnalysisMetric;
 import seakers.orekit.coverage.analysis.GroundEventAnalyzer;
-import seaker.orekit.object.CoveragePoint;
+import seakers.orekit.object.CoveragePoint;
 
 /**
  * Metrics for each point
