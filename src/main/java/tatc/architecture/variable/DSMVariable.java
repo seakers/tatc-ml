@@ -7,9 +7,9 @@ package tatc.architecture.variable;
 
 import java.util.ArrayList;
 import org.moeaframework.core.Variable;
-import seakers.conMOP.util.Bounds;
-import seakers.conMOP.variable.ConstellationVariable;
-import seakers.conMOP.variable.SatelliteVariable;
+import seakers.conmop.util.Bounds;
+import seakers.conmop.variable.ConstellationVariable;
+import seakers.conmop.variable.SatelliteVariable;
 
 /**
  *

@@ -18,7 +18,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.orekit.utils.Constants;
-import seakers.conMOP.util.Bounds;
+import seakers.conmop.util.Bounds;
 import seakers.orekit.propagation.PropagatorFactory;
 import seakers.orekit.propagation.PropagatorType;
 import seakers.orekit.util.Units;
