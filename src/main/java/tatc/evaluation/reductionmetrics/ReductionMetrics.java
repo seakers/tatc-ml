@@ -432,8 +432,14 @@ public class ReductionMetrics extends AbstractModule {
                 TopocentricFrame point = entry.getKey();
                 TimeIntervalArray time = entry.getValue();
                 
-                firstRiseTimeValues.add(time.getRiseSetTimes().get(0).getTime());
-                lastRiseTimeValues.add(time.getRiseSetTimes().get(time.getRiseSetTimes().size()-2).getTime());
+                if (time.isEmpty()) {
+                    firstRiseTimeValues.add(null);
+                    lastRiseTimeValues.add(null);
+                }
+                else {
+                    firstRiseTimeValues.add(time.getRiseSetTimes().get(0).getTime());
+                    lastRiseTimeValues.add(time.getRiseSetTimes().get(time.getRiseSetTimes().size()-2).getTime());
+                }
 
                 POIAccessMetrics poi = new POIAccessMetrics(time);
 
@@ -503,9 +509,17 @@ public class ReductionMetrics extends AbstractModule {
         LocalMetricsImaging lmi = new LocalMetricsImaging(fovGea);
         
         //get TCmin and TCmax
-        double TCmin = Collections.max(firstRiseTimeValues);
-        double TCmax = Collections.max(lastRiseTimeValues);
-        double TCavg = Collections.max(lastRiseTimeValues)/lastRiseTimeValues.size();
+        double TCmin, TCmax, TCavg;
+        if (lastRiseTimeValues.contains(null) || firstRiseTimeValues.contains(null)){
+            TCmin = 0;
+            TCmax = 0;
+            TCavg = 0;
+        }
+        else {
+            TCmin = Collections.max(firstRiseTimeValues);
+            TCmax = Collections.max(lastRiseTimeValues);
+            TCavg = Collections.max(lastRiseTimeValues)/lastRiseTimeValues.size();
+        }
 
         lmi.save(getOutputFile(), "lcl");
         GlobalMetrics gm = new GlobalMetrics(fovGea, gndGea, TCmin, TCmax, TCavg);
