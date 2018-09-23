@@ -437,6 +437,9 @@ public class ReductionMetrics extends AbstractModule {
                     lastRiseTimeValues.add(null);
                 }
                 else {
+                    System.out.println(time.getRiseAndSetTimesList().length);
+                    System.out.println(time.getRiseSetTimes().isEmpty());
+                    System.out.println(time.getRiseSetTimes().size());
                     firstRiseTimeValues.add(time.getRiseSetTimes().get(0).getTime());
                     lastRiseTimeValues.add(time.getRiseSetTimes().get(time.getRiseSetTimes().size()-2).getTime());
                 }
