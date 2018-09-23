@@ -510,7 +510,8 @@ public class ReductionMetrics extends AbstractModule {
         
         //get TCmin and TCmax
         double TCmin, TCmax, TCavg;
-        if (lastRiseTimeValues.contains(null) || firstRiseTimeValues.contains(null)){
+        if (lastRiseTimeValues.contains(null) || lastRiseTimeValues.isEmpty() || 
+                firstRiseTimeValues.contains(null) ||firstRiseTimeValues.isEmpty()){
             TCmin = 0;
             TCmax = 0;
             TCavg = 0;
