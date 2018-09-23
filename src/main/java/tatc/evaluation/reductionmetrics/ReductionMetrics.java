@@ -432,7 +432,7 @@ public class ReductionMetrics extends AbstractModule {
                 TopocentricFrame point = entry.getKey();
                 TimeIntervalArray time = entry.getValue();
                 
-                if (time.isEmpty()) {
+                if (time == null) {
                     firstRiseTimeValues.add(null);
                     lastRiseTimeValues.add(null);
                 }
