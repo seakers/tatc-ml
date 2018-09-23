@@ -6,7 +6,7 @@
 package tatc.tradespaceiterator;
 
 import tatc.architecture.variable.MonolithVariable;
-import tatc.architecture.SpecialOrbit;
+import tatc.architecture.specifications.SpecialOrbit;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;

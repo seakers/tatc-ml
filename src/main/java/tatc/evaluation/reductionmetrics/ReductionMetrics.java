@@ -75,6 +75,7 @@ import tatc.util.JSONIO;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Collections;
 
 /**
  * The reduction and metrics module
@@ -215,7 +216,7 @@ public class ReductionMetrics extends AbstractModule {
 
             //create satellite
             Satellite sat = new Satellite(String.valueOf(i), orbit, null, payload,
-                    receiver, transmitter, mass, mass);
+                    receiver, transmitter, mass, 0);
 
             //assume that all satellites are assigned the same ground stations
             stationAssignment.put(sat, groundStations);
@@ -277,6 +278,13 @@ public class ReductionMetrics extends AbstractModule {
         for (Satellite sat : satellites){
             satAccess.put(sat, new HashMap<>(fovEventAnalysis.getSatelliteAccesses(cdef, sat)));
         }
+        
+        //get TCavg, TCmin, TCmax
+        //TCmin
+        ArrayList<Double> firstRiseTimeValues = new ArrayList<>();
+        //TCmax
+        ArrayList<Double> lastRiseTimeValues = new ArrayList<>();
+            
 
         // For every orbital and vector analysis in analysis array
         for (int j = 0; j < analyses.size(); j++) {
@@ -416,11 +424,16 @@ public class ReductionMetrics extends AbstractModule {
             File accessesFile = new File(file, "Pay00" + Integer.toString(1000 + payloadCounter).substring(1));
             accessesFile.mkdir();
 
+            //save point of interests
             int poiCount = 0;
+            
             for (Map.Entry<TopocentricFrame, TimeIntervalArray> entry : access.entrySet()) {
 
                 TopocentricFrame point = entry.getKey();
                 TimeIntervalArray time = entry.getValue();
+                
+                firstRiseTimeValues.add(time.getRiseSetTimes().get(0).getTime());
+                lastRiseTimeValues.add(time.getRiseSetTimes().get(time.getRiseSetTimes().size()-2).getTime());
 
                 POIAccessMetrics poi = new POIAccessMetrics(time);
 
@@ -488,9 +501,14 @@ public class ReductionMetrics extends AbstractModule {
         GroundEventAnalyzer fovGea = new GroundEventAnalyzer(((GroundEventAnalysis) fovAnalysis).getEvents(cdef));
         GroundEventAnalyzer gndGea = new GroundEventAnalyzer(((GndStationEventAnalysis) gndStationAnalysis).getEvents());
         LocalMetricsImaging lmi = new LocalMetricsImaging(fovGea);
+        
+        //get TCmin and TCmax
+        double TCmin = Collections.max(firstRiseTimeValues);
+        double TCmax = Collections.max(lastRiseTimeValues);
+        double TCavg = Collections.max(lastRiseTimeValues)/lastRiseTimeValues.size();
 
         lmi.save(getOutputFile(), "lcl");
-        GlobalMetrics gm = new GlobalMetrics(fovGea, gndGea);
+        GlobalMetrics gm = new GlobalMetrics(fovGea, gndGea, TCmin, TCmax, TCavg);
 
         gm.save(getOutputFile(), "gbl");
 
@@ -509,6 +527,8 @@ public class ReductionMetrics extends AbstractModule {
         Properties prop = new Properties();
         //average revisit time
         out[0] = fovGea.getStatistics(AnalysisMetric.DURATION, false, prop).getMean();
+        out[1] = fovGea.getStatistics(AnalysisMetric.MEAN_TIME_TO_T, false, prop).getMean();
+        
         //total ground station access time but add up the individual satellite links
         //GroundEventAnalyzer stGea = new GroundEventAnalyzer(gstAnalysis.getEvents());
         //out[1] = stGea.getStatistics(AnalysisMetric.DURATION, false,prop).getMean();

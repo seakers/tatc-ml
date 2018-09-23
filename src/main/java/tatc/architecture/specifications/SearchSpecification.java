@@ -3,19 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package tatc.architecture;
+package tatc.architecture.specifications;
 
 /**
- * Enum of special orbits
- * @author Prachichi
+ *
+ * @author Prachi
  */
-public enum SpecialOrbit {
-    
-    SSO,
-    
-    FROZEN,
-    
-    CRITICALLY_INCLINED,
-    
-    ISS;
+public interface SearchSpecification {
+           
+   // public SearchSpecification create(String str);
 }

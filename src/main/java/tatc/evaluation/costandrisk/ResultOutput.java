@@ -15,54 +15,78 @@ public class ResultOutput {
     /**
      * total cost estimate for mission architecture under analysis
      */
-    private final CostEstimate lifecycleCost;
+    private final SubCost lifecycleCost;
 
     /**
      * total cost to produce the physical satellites themselves
      */
-    private final CostEstimate hardwareCost;
+    private final SubCost hardwareCost;
 
     /**
      * total cost of integrating, assembling and testing the system
      */
-    private final CostEstimate iatCost;
+    private final SubCost iatCost;
 
     /**
      * total systems engineering program-level cost
      */
-    private final CostEstimate programCost;
+    private final SubCost programCost;
 
     /**
      * total cost of ground system and ground operations
      */
-    private final CostEstimate groundCost;
+    private final SubCost groundCost;
 
     /**
      * total cost of launch vehicle and launch operations
      */
-    private final CostEstimate launchCost;
+    private final SubCost launchCost;
 
     /**
      * total mission operations cost estimate
      */
-    private final CostEstimate operationsCost;
+    private final SubCost operationsCost;
 
     /**
      * total non-recurring mission costs estimate
      */
-    private final CostEstimate nonRecurringCost;
+    private final SubCost nonRecurringCost;
 
     /**
      * total recurring mission costs estimate
      */
-    private final CostEstimate recurringCost;
+    private final SubCost recurringCost;
 
     /**
      * array of spacecraft rankings according to estimated cost
      */
     private final SpacecraftRank[] spacecraftRank;
-
-    public ResultOutput(CostEstimate lifecycleCost, CostEstimate hardwareCost, CostEstimate iatCost, CostEstimate programCost, CostEstimate groundCost, CostEstimate launchCost, CostEstimate operationsCost, CostEstimate nonRecurringCost, CostEstimate recurringCost, SpacecraftRank[] spacecraftRank) {
+    
+    /**
+     * array of system risks
+     */
+    private final SystemRisk[] systemRisk;
+    
+    /**
+     * 
+     * @param lifecycleCost
+     * @param hardwareCost
+     * @param iatCost
+     * @param programCost
+     * @param groundCost
+     * @param launchCost
+     * @param operationsCost
+     * @param nonRecurringCost
+     * @param recurringCost
+     * @param spacecraftRank 
+     * @param systemRisk
+     */
+    public ResultOutput(SubCost lifecycleCost, SubCost hardwareCost, SubCost iatCost, 
+            SubCost programCost, SubCost groundCost, 
+            SubCost launchCost, SubCost operationsCost, 
+            SubCost nonRecurringCost, SubCost recurringCost, 
+            SpacecraftRank[] spacecraftRank,
+            SystemRisk[] systemRisk) {
         this.lifecycleCost = lifecycleCost;
         this.hardwareCost = hardwareCost;
         this.iatCost = iatCost;
@@ -73,45 +97,50 @@ public class ResultOutput {
         this.nonRecurringCost = nonRecurringCost;
         this.recurringCost = recurringCost;
         this.spacecraftRank = spacecraftRank;
+        this.systemRisk = systemRisk;
     }
 
-    public CostEstimate getLifecycleCost() {
+    public SubCost getLifecycleCost() {
         return lifecycleCost;
     }
 
-    public CostEstimate getHardwareCost() {
+    public SubCost getHardwareCost() {
         return hardwareCost;
     }
 
-    public CostEstimate getIatCost() {
+    public SubCost getIatCost() {
         return iatCost;
     }
 
-    public CostEstimate getProgramCost() {
+    public SubCost getProgramCost() {
         return programCost;
     }
 
-    public CostEstimate getGroundCost() {
+    public SubCost getGroundCost() {
         return groundCost;
     }
 
-    public CostEstimate getLaunchCost() {
+    public SubCost getLaunchCost() {
         return launchCost;
     }
 
-    public CostEstimate getOperationsCost() {
+    public SubCost getOperationsCost() {
         return operationsCost;
     }
 
-    public CostEstimate getNonRecurringCost() {
+    public SubCost getNonRecurringCost() {
         return nonRecurringCost;
     }
 
-    public CostEstimate getRecurringCost() {
+    public SubCost getRecurringCost() {
         return recurringCost;
     }
 
     public SpacecraftRank[] getSpacecraftRank() {
         return spacecraftRank;
+    }
+    
+    public SystemRisk[] getSystemRisk() {
+        return systemRisk;
     }
 }

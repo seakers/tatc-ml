@@ -91,7 +91,12 @@ public class CostRiskSeak extends AbstractModule {
         SubCost programC = new SubCost(programCost, fiscalYear, standardError);
         SubCost recurringC = new SubCost(recurringCost, fiscalYear, standardError);
         SubCost nonrecurringC = new SubCost(nonRecurringCost, fiscalYear, standardError);
-        CostRiskJSON cr = new CostRiskJSON(groundC, hardwareC, iatC, launchC, lifecycleC, operationsC, programC, recurringC, nonrecurringC);
+        
+        SpacecraftRank[] rank = new SpacecraftRank[]{new SpacecraftRank(2017, 1, 0, 200000)};
+        
+        SystemRisk[] risk = new SystemRisk[]{new SystemRisk("Configuration Risks", 3, 1, "Risk of unforseen risk arising due to lack of flight heritage")};
+        
+        CostRiskJSON cr = new CostRiskJSON(groundC, hardwareC, iatC, launchC, lifecycleC, operationsC, programC, recurringC, nonrecurringC, rank, risk);
 
         JSONIO.writeJSON(getOutputFile(), cr);
         return this;

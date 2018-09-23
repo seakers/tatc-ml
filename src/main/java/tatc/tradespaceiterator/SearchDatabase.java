@@ -43,7 +43,7 @@ public class SearchDatabase {
      * Map of the launch vehicle specifications
      */
     private static HashMap<Integer, LaunchVehicleSpecification> lvMap;
-
+    
     /**
      * Create private constructor
      */
@@ -169,7 +169,7 @@ public class SearchDatabase {
     public LaunchVehicleSpecification getLaunchVehicleSpecification(int id) {
         return SearchDatabase.lvMap.get(id);
     }
-
+    
     /**
      * Gets the number of observatory specifications stored in the database
      *
@@ -207,8 +207,8 @@ public class SearchDatabase {
     public int getNumberOfLaunchVehicleSpecifications() {
         return SearchDatabase.lvMap.size();
     }
-
-
+    
+  
     /**
      * Gets the ID for the given specification
      *
@@ -272,5 +272,5 @@ public class SearchDatabase {
         }
         return -1;
     }
-
+    
 }

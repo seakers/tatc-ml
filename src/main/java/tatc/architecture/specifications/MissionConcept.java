@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package tatc.architecture;
+package tatc.architecture.specifications;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -22,7 +22,7 @@ import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
 import seakers.orekit.object.CoverageDefinition;
 import seakers.orekit.object.CoveragePoint;
-import tatc.architecture.specifications.GroundStationSpecification;
+import tatc.tradespaceiterator.TradespaceSearchRequest;
 
 /**
  *
@@ -45,6 +45,11 @@ public class MissionConcept {
      */
     private final String MissionDuration;
 
+     /**
+     * String specifying the coverage grid granularity
+     */
+    private final int Granularity;
+    
     /**
      * String specifying one of: Filepath to EarthPointList or latMin:latMax
      * where the full range of longitudes is implied or latMin:latMax
@@ -77,20 +82,25 @@ public class MissionConcept {
     private final String MissionDirector;
 
     private final int Propulsion;
+    
+    private final String SearchPreferences;
 
     public MissionConcept(int StartEpoch, String PerformancePeriod,
-            String MissionDuration, String AreaOfInterest,
+            String MissionDuration, int Granularity, String AreaOfInterest,
             String ObjectsOfInterest, String GroundStationOptions,
-            String LaunchPreferences, String MissionDirector, int Propulsion) {
+            String LaunchPreferences, String MissionDirector, int Propulsion, 
+            String SearchPreferences) {
         this.StartEpoch = StartEpoch;
         this.PerformancePeriod = PerformancePeriod;
         this.MissionDuration = MissionDuration;
+        this.Granularity = Granularity;
         this.AreaOfInterest = AreaOfInterest;
         this.ObjectsOfInterest = ObjectsOfInterest;
         this.GroundStationOptions = GroundStationOptions;
         this.LaunchPreferences = LaunchPreferences;
         this.MissionDirector = MissionDirector;
         this.Propulsion = Propulsion;
+        this.SearchPreferences = SearchPreferences;
     }
 
     public AbsoluteDate getStartEpoch() throws OrekitException {
@@ -122,6 +132,14 @@ public class MissionConcept {
         return Integer.parseInt(MissionDuration);
     }
 
+    /**
+     * Gets the granularity of the grid
+     * @return granularity
+     */
+    public int getGranularity() {
+        return this.Granularity;
+    }
+    
     /**
      * Converts the area of interest into a collection of points of interest
      *
@@ -164,6 +182,7 @@ public class MissionConcept {
             lats[0] = Double.parseDouble(latstr[0]);
             lats[1] = Double.parseDouble(latstr[1]);
             double[] lons = new double[2];
+            int granularity = this.Granularity;
             switch (args.length) {
                 case 1:
                     //when only latitue ranges are given, assumes that points should be given around in longitude
@@ -178,7 +197,7 @@ public class MissionConcept {
                 default:
                     throw new UnsupportedOperationException("Expected a filepath to the EarthPointList or a range of latitude and/or longitudes");
             }
-            return new CoverageDefinition("", 30, lats[0], lats[1], lons[0], lons[1],
+            return new CoverageDefinition("", granularity, lats[0], lats[1], lons[0], lons[1],
                     earthShape, CoverageDefinition.GridStyle.UNIFORM).getPoints();
         }
     }
@@ -284,7 +303,28 @@ public class MissionConcept {
     public int getPropulsion() {
         return Propulsion;
     }
-
+    
+    public int getSearchPreferences() {
+        
+        int out;
+        String searchProcedure = SearchPreferences;       
+        File f;
+        //check if there is a SearchPreference file
+        switch (searchProcedure) {
+            case "FullFactorial":
+                out = 0;
+                break;
+            case "GA":
+                out = 1;
+                break;
+                    
+            default:
+                f = new File(System.getProperty("tatc.root"), searchProcedure);
+                throw new IllegalArgumentException(String.format("No file found at %s", f.getAbsoluteFile()));
+        }
+        return out;
+    }
+    
     /**
      * Creates a new instance of this mission concept
      *
@@ -292,9 +332,9 @@ public class MissionConcept {
      */
     public MissionConcept copy() {
         return new MissionConcept(StartEpoch, PerformancePeriod,
-                MissionDuration, AreaOfInterest, ObjectsOfInterest,
+                MissionDuration, Granularity, AreaOfInterest, ObjectsOfInterest,
                 GroundStationOptions, LaunchPreferences, MissionDirector,
-                Propulsion);
+                Propulsion, SearchPreferences);
     }
 
 }

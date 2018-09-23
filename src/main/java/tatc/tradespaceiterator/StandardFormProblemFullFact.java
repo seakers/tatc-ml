@@ -26,17 +26,19 @@ import seakers.conmop.util.Bounds;
 import seakers.orekit.constellations.EnumerateWalkerConstellations;
 import seakers.orekit.constellations.WalkerParameters;
 import seakers.orekit.util.Units;
-import tatc.architecture.MissionConcept;
-import tatc.architecture.SpecialOrbit;
+import tatc.architecture.specifications.MissionConcept;
+import tatc.architecture.specifications.SpecialOrbit;
 import tatc.architecture.TATCArchitecture;
 import tatc.architecture.TATCWalker;
 import tatc.architecture.specifications.DSMSpecification;
+import tatc.architecture.specifications.FullFactorialSpecification;
 import tatc.architecture.specifications.GroundStationSpecification;
 import tatc.architecture.specifications.InstrumentSpecification;
 import tatc.architecture.specifications.LaunchVehicleSpecification;
 import tatc.architecture.specifications.MonoSpecification;
 import tatc.architecture.specifications.ObservatorySpecification;
 import tatc.architecture.specifications.SatelliteOrbitSpecification;
+import tatc.architecture.specifications.SearchSpecification;
 import tatc.architecture.variable.MonolithVariable;
 import tatc.evaluation.costandrisk.Constellation;
 import tatc.evaluation.costandrisk.Context;
@@ -97,7 +99,7 @@ public class StandardFormProblemFullFact {
     private final ArrayList<Integer> numberOfSats;
 
     private final ArrayList<SpecialOrbit> specialOrbits;
-
+    
     //constructor for this class -> same name as the class
     public StandardFormProblemFullFact(TradespaceSearchRequest tsr, Properties properties) {
 
@@ -138,8 +140,8 @@ public class StandardFormProblemFullFact {
                 db.addLaunchVehicleSpecification(spec);
                 lvSpecs.add(spec);
             }
-
-//          //Launch Vehicle options to be considered here  
+            
+ //          //Launch Vehicle options to be considered here  
 //            this.lvs = new LaunchVehicleSelector(lvSpecs);
             //set discrete options for altitude, inclination, num sats, num planes
             altitudes = discretizeAltitudes(tsr.getSatelliteOrbits().getSemiMajorAxisRange());
@@ -180,9 +182,9 @@ public class StandardFormProblemFullFact {
     public final void evaluate() {
 
         //output the variables and metrics in a csv file
-        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(new File(System.getProperty("tatc.moea", "results"), "results.csv")))) {
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(new File(System.getProperty("tatc.access_results"), "results.csv")))) {
 
-            bufferedWriter.append("Altitude[m],Inclination[deg],Satellites,Planes,Phase,Avg Revisit Time[min],Cost[FY10$M]");
+            bufferedWriter.append("Altitude[m],Inclination[deg],Satellites,Planes,Phase,Avg Revisit Time[min],Avg Response Time[min],Cost[FY10$M]");
             bufferedWriter.newLine();
 
             //convert arraylists to array in order to pass into fullFactWalker
@@ -199,7 +201,7 @@ public class StandardFormProblemFullFact {
             constellationParams = EnumerateWalkerConstellations.fullFactWalker(ArrayUtils.toPrimitive(altArray),
                     ArrayUtils.toPrimitive(incArray),
                     ArrayUtils.toPrimitive(numSatsArray));
-
+            
             for (WalkerParameters params : constellationParams) {
 
                 //create subspace directory
@@ -208,14 +210,15 @@ public class StandardFormProblemFullFact {
                 currentDSMSubspace.mkdir();
 
                 WalkerArchitecture arch;
+                double incl;
 
                 if (params.getI() == -1) {
-                    double ssoIncl = this.getSSOInclination(params.getA());
-                    arch = new WalkerArchitecture(params.getA(), ssoIncl, params.getT(), params.getP(), params.getF(), existingSatellites);
+                    incl = this.getSSOInclination(params.getA());
                 } else {
-                    arch = new WalkerArchitecture(params.getA(), params.getI(), params.getT(), params.getP(), params.getF(), existingSatellites);
-
+                    incl = params.getI();
                 }
+                
+                arch = new WalkerArchitecture(params.getA(), incl, params.getT(), params.getP(), params.getF(), existingSatellites);
 
                 //start date and end date/coverage
                 MissionConcept newConcept = tsr.getMissionConcept().copy();
@@ -238,13 +241,18 @@ public class StandardFormProblemFullFact {
                         "avg revisit: %.2f[min], lifecycle cost: %.2f[$],",
                         rm.getMetrics()[0] / 60.,
                         crOutput.getLifecycleCost().getEstimate()));
+                Logger.getGlobal().fine(String.format(
+                        "avg response: %.2f[min], lifecycle cost: %.2f[$],",
+                        rm.getMetrics()[1] / 60.,
+                        crOutput.getLifecycleCost().getEstimate()));
 
                 bufferedWriter.append(Double.toString(params.getA()) + ",");
-                bufferedWriter.append(Double.toString(FastMath.toDegrees(params.getI())) + ",");
+                bufferedWriter.append(Double.toString(FastMath.toDegrees(incl)) + ",");
                 bufferedWriter.append(Double.toString(params.getT()) + ",");
                 bufferedWriter.append(Double.toString(params.getP()) + ",");
                 bufferedWriter.append(Double.toString(params.getF()) + ",");
                 bufferedWriter.append(Double.toString(rm.getMetrics()[0] / 60.) + ",");
+                bufferedWriter.append(Double.toString(rm.getMetrics()[1] / 60.) + ",");
                 bufferedWriter.append(Double.toString(crOutput.getLifecycleCost().getEstimate()));
                 bufferedWriter.newLine();
             }
@@ -301,7 +309,7 @@ public class StandardFormProblemFullFact {
 
         ArrayList<Double> alts = new ArrayList<>();
 
-        for (double count = l; count <= u; count = count + 100000) {
+        for (double count = l; count <= u; count = count + 50000) {
             alts.add(count);
         }
         return alts;
@@ -478,10 +486,12 @@ public class StandardFormProblemFullFact {
         public WalkerArchitecture(double altitude, double inclination,
                 int numberOfSatellite, int numberOfPlanes, int phases,
                 Set<MonolithVariable> existingSatellites) {
+            
             this.existingSatellites = existingSatellites;
 
             TATCWalker walker = new TATCWalker(altitude, inclination, numberOfSatellite,
                     numberOfPlanes, phases);
+            
             this.monos = walker.getSatellites();
         }
 

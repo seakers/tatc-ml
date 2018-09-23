@@ -32,14 +32,32 @@ public class GlobalMetrics extends AbstractRMOutput {
     private final GroundEventAnalyzer gndAnalyzer;
 
     /**
+     * time to coverage metrics
+     */
+    private final double TCmin;
+    
+    /**
+     * time to coverage metrics
+     */
+    private final double TCmax;
+    
+    /**
+     * time to coverage metrics
+     */
+    private final double TCavg;
+    
+    /**
      * Flag to see if writing is done
      */
     private boolean done;
 
-    public GlobalMetrics(GroundEventAnalyzer fovAnalyzer, GroundEventAnalyzer gndAnalyzer) {
+    public GlobalMetrics(GroundEventAnalyzer fovAnalyzer, GroundEventAnalyzer gndAnalyzer, double TCmin, double TCmax, double TCavg) {
         super(groupsInit(), metaDataInit(), summaryInit(), metricsInit(), unitsInit());
         this.fovAnalyzer = fovAnalyzer;
         this.gndAnalyzer = gndAnalyzer;
+        this.TCmin = TCmin;
+        this.TCmax = TCmax;
+        this.TCavg = TCavg;
         done = false;
     }
 
@@ -143,9 +161,9 @@ public class GlobalMetrics extends AbstractRMOutput {
             entry[0] = "0";
             entry[1] = String.valueOf(fovAnalyzer.getEndDate().durationFrom(fovAnalyzer.getStartDate()));
             //Time to Access
-            entry[2] = "";
-            entry[3] = "";
-            entry[4] = "";
+            entry[2] = Double.toString(TCavg);
+            entry[3] = Double.toString(TCmin);;
+            entry[4] = Double.toString(TCmax);;
             //AccessTime
             entry[5] = String.valueOf(fovAnalyzer.getStatistics(AnalysisMetric.DURATION, true, prop).getMean());
             entry[6] = String.valueOf(fovAnalyzer.getStatistics(AnalysisMetric.DURATION, true, prop).getMin());

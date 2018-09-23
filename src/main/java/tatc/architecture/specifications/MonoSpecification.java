@@ -6,7 +6,6 @@
 package tatc.architecture.specifications;
 
 import java.util.Set;
-import tatc.architecture.MissionConcept;
 import tatc.architecture.variable.MonolithVariable;
 
 /**

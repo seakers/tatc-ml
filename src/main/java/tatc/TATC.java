@@ -83,21 +83,21 @@ public class TATC {
         ConsoleHandler handler = new ConsoleHandler();
         handler.setLevel(level);
         Logger.getGlobal().addHandler(handler);
-
-       
         
         File mainPath = new File(System.getProperty("user.dir"), "problems");
         System.setProperty("tatc.root", mainPath.getAbsolutePath());
         System.setProperty("tatc.cr", new File(mainPath.getAbsolutePath(), "CaR").getAbsolutePath());
         System.setProperty("tatc.rm", new File(mainPath.getAbsolutePath(), "RM").getAbsolutePath());
         System.setProperty("tatc.groundstation", new File(mainPath.getAbsolutePath(), "GroundStations").getAbsolutePath());
-        System.setProperty("tatc.results", new File(mainPath.getAbsolutePath(), "results").getAbsolutePath());
-        System.setProperty("tatc.dsms", new File(System.getProperty("tatc.results"), "DSMs").getAbsolutePath());
-        System.setProperty("tatc.monos", new File(System.getProperty("tatc.results"), "Mono").getAbsolutePath());
-        System.setProperty("tatc.moea", new File(mainPath.getParent(), "results").getAbsolutePath());
+        System.setProperty("tatc.results", new File(mainPath.getParentFile(), "results").getAbsolutePath());
+        System.setProperty("tatc.access_results", new File((System.getProperty("tatc.results")), "access_results").getAbsolutePath());
+        System.setProperty("tatc.dsms", new File(System.getProperty("tatc.access_results"), "DSMs").getAbsolutePath());
+        System.setProperty("tatc.monos", new File(System.getProperty("tatc.access_results"), "Mono").getAbsolutePath());
+        System.setProperty("tatc.moea", new File(System.getProperty("tatc.results"), "ga_results").getAbsolutePath());
 
         Properties properties = new Properties();
-        System.setProperty("tatc.numThreads", "1");
+        
+        System.setProperty("tatc.numThreads", "16");
 
         TradespaceSearchRequest tsr = JSONIO.readJSON(
                 new File(mainPath, "TradespaceSearchRequest.json"),
@@ -110,9 +110,9 @@ public class TATC {
         // 1 - MOEA without AOS
         // 2 - MOEA with offline AOS
         // 3 - MOEA with online AOS
-        int options = 3;
+        
 
-        if (options == 0) {
+        if (tsr.getMissionConcept().getSearchPreferences() == 0) {
 
             //set up the system parameters
             long startTime = System.nanoTime();
@@ -125,7 +125,7 @@ public class TATC {
             
             Logger.getGlobal().finest(String.format("Took %.4f sec", (endTime - startTime) / Math.pow(10, 9)));
 
-        } else if (options == 1){
+        } else if (tsr.getMissionConcept().getSearchPreferences() == 1){
             
             StandardFormProblemGA problem = new StandardFormProblemGA(tsr, properties);
             
@@ -176,7 +176,7 @@ public class TATC {
             ResultIO.savePopulation(new Population(allSolutions), Paths.get(System.getProperty("tatc.moea"), "population").toString());
             ResultIO.saveSearchResults(new Population(allSolutions), Paths.get(System.getProperty("tatc.moea"), "results").toString());
             
-        } else if (options == 2){
+        } else if (tsr.getMissionConcept().getSearchPreferences() == 2){
 
             StandardFormProblemGA problem = new StandardFormProblemGA(tsr, properties);
             
@@ -239,7 +239,7 @@ public class TATC {
             AOSHistoryIO.saveSelectionHistory(aos.getSelectionHistory(), new File(System.getProperty("tatc.moea"), "res.select"), ",");
         }
         
-        else if(options == 3){
+        else if(tsr.getMissionConcept().getSearchPreferences() == 3){
 
             //initialize problem
             StandardFormProblemGA problem = new StandardFormProblemGA(tsr, properties);

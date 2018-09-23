@@ -5,8 +5,6 @@
  */
 package tatc.architecture.specifications;
 
-import tatc.architecture.MissionConcept;
-
 /**
  * Specification for a distributed satellite mission
  * @author nhitomi

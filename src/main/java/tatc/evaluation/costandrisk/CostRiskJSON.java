@@ -2,19 +2,6 @@ package tatc.evaluation.costandrisk;
 
 public class CostRiskJSON {
 
-    /**
-     * author - prachichi
-     * @param groundCost
-     * @param hardwareCost
-     * @param iatCost
-     * @param launchCost
-     * @param lifecycleCost
-     * @param nonRecurringCost
-     * @param operationsCost
-     * @param programCost
-     * @param recurringCost
-     */
-
     public final SubCost groundCost;
     public final SubCost hardwareCost;
     public final SubCost iatCost;
@@ -24,10 +11,15 @@ public class CostRiskJSON {
     public final SubCost operationsCost;
     public final SubCost programCost;
     public final SubCost recurringCost;
+    public final SpacecraftRank[] spacecraftRank;
+    public final SystemRisk[] systemRisk;
 
 
-    public CostRiskJSON(SubCost groundCost, SubCost hardwareCost, SubCost iatCost, SubCost launchCost,
-                    SubCost lifecycleCost, SubCost nonRecurringCost, SubCost operationsCost, SubCost programCost, SubCost recurringCost) {
+    public CostRiskJSON(SubCost groundCost, SubCost hardwareCost, 
+            SubCost iatCost, SubCost launchCost, SubCost lifecycleCost, 
+            SubCost nonRecurringCost, SubCost operationsCost, 
+            SubCost programCost, SubCost recurringCost,
+            SpacecraftRank[] spacecraftRank, SystemRisk[] systemRisk) {
         this.groundCost = groundCost;
         this.hardwareCost = hardwareCost;
         this.iatCost = iatCost;
@@ -37,6 +29,8 @@ public class CostRiskJSON {
         this.operationsCost = operationsCost;
         this.programCost = programCost;
         this.recurringCost = recurringCost;
+        this.spacecraftRank = spacecraftRank;
+        this.systemRisk = systemRisk;
     }
 
     public SubCost getGroundCost() {
@@ -73,5 +67,13 @@ public class CostRiskJSON {
 
     public SubCost getRecurringCost() {
         return recurringCost;
+    }
+    
+    public SpacecraftRank[] getSpacecraftRanks() {
+        return spacecraftRank;
+    }
+    
+    public SystemRisk[] getSystemRisk() {
+        return systemRisk;
     }
 }

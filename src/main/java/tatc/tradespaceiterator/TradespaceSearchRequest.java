@@ -5,7 +5,7 @@
  */
 package tatc.tradespaceiterator;
 
-import tatc.architecture.MissionConcept;
+import tatc.architecture.specifications.MissionConcept;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -33,6 +33,16 @@ public class TradespaceSearchRequest {
     private final OutputBounds OutputBounds;
     private final FullOutputs FullOutputs;
 
+    /**
+     * 
+     * @param MissionConcepts
+     * @param SatelliteOrbits
+     * @param ObervatorySpecifications
+     * @param InstrumentSpecifications
+     * @param LaunchVehicleSpecification
+     * @param OutputBounds
+     * @param FullOutputs
+     */
     public TradespaceSearchRequest(MissionConcept MissionConcepts,
             SatelliteOrbits SatelliteOrbits, String ObervatorySpecifications,
             String InstrumentSpecifications, String LaunchVehicleSpecification,
@@ -131,5 +141,4 @@ public class TradespaceSearchRequest {
     public FullOutputs getFullOutputs() {
         return FullOutputs;
     }
-
 }

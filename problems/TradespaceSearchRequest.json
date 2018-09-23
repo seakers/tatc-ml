@@ -2,26 +2,29 @@
  "MissionConcepts": {
                      "StartEpoch"          : 1455213665               ,
                      "PerformancePeriod"   : "0:604800"  ,
-                     "MissionDuration"   : "25920000"  ,
+                     "MissionDuration"     : "999999999"  ,
+                     "Granularity"         : 12 ,
                      "AreaOfInterest"      : "-30:30"  ,
                      "ObjectsOfInterest"   : "Sun Moon"               ,
                      "GroundStationOptions": "NENgov"      ,
                      "LaunchPreferences"   : "launchVehicles.txt",
-                     "MissionDirector"        : "Academic",
-                     "Propulsion"        : 1
+                     "MissionDirector"     : "Academic",
+                     "Propulsion"          : 1,
+                     "SearchPreferences"   : "FullFactorial"
                     },
 
                      "SatelliteOrbits": {
                      "ExistingSatelliteOptions"   : "ExistingSatelliteListEx.txt",
-                     "NumberOfNewSatellites"      : "1:2"                    ,
-                     "AltitudeRangesOfInterest"   : "400:500"              ,
-                     "InclinationRangesOfInterest": "30:40"     ,
-                     "SpecialOrbits"              : ""                         ,
+                     "NumberOfNewSatellites"      : "1:18"                    ,
+                     "AltitudeRangesOfInterest"   : "400:800"              ,
+                     "InclinationRangesOfInterest": "30:90"     ,
+                     "SpecialOrbits"              : "SSO"                         ,
                      "PropagationFidelity"        : 0
                     },
                      "ObservatorySpecifications": "ObservatorySpecificationsEx.txt",
                      "InstrumentSpecifications" : "InstrumentSpecificationsEx.txt" ,
                      "LaunchVehicleSpecifications" : "LaunchVehicles.txt" ,
+                     "SearchSpecifications": "SearchSpecifications.txt",
                   "OutputBounds": {
                   "TimeToCoverage"   : "",
                   "AccessTime"       : ""         ,
@@ -37,8 +40,8 @@
                   "DownlinkAccessPerDay"       : ""         ,
                   "SunAzimuth"       : ""         ,
                   "SpatialResolution": "1:30"     ,
-                  "CrossSwath"       : "0:185"   ,
-                  "AlongSwath"       : "0:185"   ,
+                  "CrossSwath"       : "0:57"   ,
+                  "AlongSwath"       : "0:20"   ,
                   "ObsLatitude"      : ""         ,
                   "ObsLongitude"     : ""         ,
                   "ObsAltitude"      : ""         ,
@@ -52,6 +55,6 @@
                   "ObsAzimuth"       : "0",
                   "SunZenith"        : "0", 
                   "SunAzimuth"       : "0", 
-                  "TimeStep"         : "300"    
+                  "TimeStep"         : "60"    
                  }
 }

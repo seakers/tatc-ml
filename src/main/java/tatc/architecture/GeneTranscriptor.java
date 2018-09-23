@@ -27,7 +27,7 @@ public class GeneTranscriptor {
      * @param soln the solution to be translated
      * @return 
      */
-    public static Solution trasncript(Solution soln) {
+    public static Solution transcript(Solution soln) {
         ArrayList<Variable> variables = new ArrayList<>();
         for (int i = 0; i < soln.getNumberOfVariables(); i++) {
             Variable var = soln.getVariable(i);
