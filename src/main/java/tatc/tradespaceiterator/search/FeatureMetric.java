@@ -6,9 +6,13 @@
 package tatc.tradespaceiterator.search;
 
 /**
- *
- * @author nozomihitomi
+ * An Enum for the metrics for a feature (support, forward and reverse confidence, and lift)
+ * @author Prachi
  */
-public interface SearchStrategy {
+    public enum FeatureMetric {
     
+    SUPPORT,
+    FCONFIDENCE,
+    RCONFIDENCE,
+    LIFT
 }

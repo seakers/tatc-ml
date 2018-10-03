@@ -125,7 +125,7 @@ public class TATC {
             
             Logger.getGlobal().finest(String.format("Took %.4f sec", (endTime - startTime) / Math.pow(10, 9)));
 
-        } else if (tsr.getMissionConcept().getSearchPreferences() == 1){
+        } else if (tsr.getMissionConcept().getSearchPreferences() == 12){
             
             StandardFormProblemGA problem = new StandardFormProblemGA(tsr, properties);
             
@@ -176,7 +176,7 @@ public class TATC {
             ResultIO.savePopulation(new Population(allSolutions), Paths.get(System.getProperty("tatc.moea"), "population").toString());
             ResultIO.saveSearchResults(new Population(allSolutions), Paths.get(System.getProperty("tatc.moea"), "results").toString());
             
-        } else if (tsr.getMissionConcept().getSearchPreferences() == 2){
+        } else if (tsr.getMissionConcept().getSearchPreferences() == 21){
 
             StandardFormProblemGA problem = new StandardFormProblemGA(tsr, properties);
             
@@ -239,7 +239,7 @@ public class TATC {
             AOSHistoryIO.saveSelectionHistory(aos.getSelectionHistory(), new File(System.getProperty("tatc.moea"), "res.select"), ",");
         }
         
-        else if(tsr.getMissionConcept().getSearchPreferences() == 3){
+        else if(tsr.getMissionConcept().getSearchPreferences() == 1){
 
             //initialize problem
             StandardFormProblemGA problem = new StandardFormProblemGA(tsr, properties);
@@ -248,8 +248,8 @@ public class TATC {
             TypedProperties typProperties = new TypedProperties();
             
             //search paramaters set here
-            int popSize = 3;
-            int maxEvals = 50;
+            int popSize = 2;
+            int maxEvals = 500;
             typProperties.setInt("maxEvaluations", maxEvals);
             typProperties.setInt("populationSize", popSize);
             double crossoverProbability = 1.0;
@@ -262,12 +262,12 @@ public class TATC {
                     popSize);
             Population population = new Population();
             DominanceComparator comparator = new ParetoDominanceComparator();
-            EpsilonBoxDominanceArchive archive = new EpsilonBoxDominanceArchive(new double[]{60, 10});
+            EpsilonBoxDominanceArchive archive = new EpsilonBoxDominanceArchive(new double[]{0.0005,0.0005});
             final TournamentSelection selection = new TournamentSelection(2, comparator);
             
             //setup for innovization
-            int epochLength = 3; //for learning rate
-            int triggerOffset = 3;
+            int epochLength = 1; //for learning rate
+            int triggerOffset = 2;
             typProperties.setInt("nOpsToAdd", 4);
             typProperties.setInt("nOpsToRemove", 4);
 
@@ -317,7 +317,7 @@ public class TATC {
             AOSMOEA aos3 = new AOSMOEA(emoea3, aosStrategy3, true);
             AbstractPopulationLabeler labeler = new NondominatedSortingLabeler(.25);
             //ecs.submit(new KDOSearch(aos3, typProperties, labeler, ops, new File(mainPath.getParent(), "results").getAbsolutePath() + File.separator + "result", innovizeAssignment));
-            KDOSearch kdo = new KDOSearch(aos3, typProperties, labeler, ops, new File(mainPath.getParent(), "results").getAbsolutePath() + File.separator + "result", "mining");
+            KDOSearch kdo = new KDOSearch(aos3, typProperties, labeler, ops, new File(mainPath.getParent(), "results").getAbsolutePath() + File.separator + "mining_results", "mining");
             try {
                 kdo.call();
             } catch (Exception ex) {
