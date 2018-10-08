@@ -29,8 +29,8 @@
       },
       "satelliteOrbit": {
         "startEcc": 0.0,
-        "startIncl": 33.333333333333336,
-        "startSMA": 6828.137,
+        "startIncl": 31.66666666666667,
+        "startSMA": 6803.137,
         "startPer": 0.0,
         "startRAAN": 0.0,
         "startTrueA": 0.0

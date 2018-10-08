@@ -21,7 +21,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import knowledge.operator.EOSSOperatorCreator;
 import mining.label.AbstractPopulationLabeler;
-import mining.label.LabelIO;
 import org.moeaframework.algorithm.AbstractEvolutionaryAlgorithm;
 import org.moeaframework.core.Algorithm;
 import org.moeaframework.core.Population;
@@ -29,6 +28,7 @@ import org.moeaframework.core.Solution;
 import org.moeaframework.core.Variation;
 import org.moeaframework.core.operator.CompoundVariation;
 import org.moeaframework.util.TypedProperties;
+import tatc.ResultIO;
 
 /**
  * This method applies data mining and innovization to increase the efficiency
@@ -65,7 +65,7 @@ public class KDOSearch implements Callable<Algorithm> {
     /**
      * Responsible for exporting the labels
      */
-    private final LabelIO lableIO;
+    private final ResultIO lableIO;
 
     /**
      * operator creator for EOSS assignment problems
@@ -93,7 +93,7 @@ public class KDOSearch implements Callable<Algorithm> {
         this.savePath = savePath;
         this.name = name;
         this.dataLabeler = dataLabeler;
-        this.lableIO = new LabelIO();
+        this.lableIO = new ResultIO();
         this.ops = ops;
         if (!(ops.getOperatorCreator() instanceof EOSSOperatorCreator)) {
             throw new IllegalArgumentException(String.format("Expected EOSSOperatorCreator as operator creation strategy. Found %s", ops.getOperatorCreator().getClass().getSimpleName()));
@@ -153,7 +153,7 @@ public class KDOSearch implements Callable<Algorithm> {
                 String labledDataFile = savePath + File.separator + name + "_" + String.valueOf(opResetCount) + "_labels.csv";
                 //TODO remove this//lableIO.saveLabels(allSolnPop, labledDataFile, ",");
                 
-                String featureDataFile = savePath + File.separator + name + "_" + String.valueOf(opResetCount) + "_features.txt";
+                String featureDataFile = savePath + File.separator + name + "_" + String.valueOf(opResetCount) + "_features.csv";
 
                 ArrayList<Boolean> behavioral = new ArrayList<>();
                 ArrayList<double[]> attributes = new ArrayList<>();
@@ -196,14 +196,10 @@ public class KDOSearch implements Callable<Algorithm> {
                 AssociationRuleMining arm = new AssociationRuleMining(dataset, true);
                 arm.run(behavioralSet, 0.0, 0.0, 6);
                 
-                List<DrivingFeature> top = arm.getTopFeatures(6, FeatureMetric.FCONFIDENCE);
+                List<DrivingFeature> topFeatures = arm.getTopFeatures(6, FeatureMetric.FCONFIDENCE);
                 
-                
-
-                List<DrivingFeature> res = MRMR.minRedundancyMaxRelevance(attributes.size(), behavioralSet, top, 4);
-                for (DrivingFeature feat : res) {
-                    System.out.println(feat);
-                }
+                List<DrivingFeature> bestFeatures = MRMR.minRedundancyMaxRelevance(attributes.size(), behavioralSet, topFeatures, 4);
+                lableIO.saveFeatures(bestFeatures, featureDataFile, ",");
             }
         }
         return alg;

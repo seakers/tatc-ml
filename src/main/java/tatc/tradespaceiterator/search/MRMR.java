@@ -10,6 +10,8 @@ package tatc.tradespaceiterator.search;
  * @author Nozomi
  */
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
@@ -18,7 +20,7 @@ import org.hipparchus.util.FastMath;
 
 public class MRMR {
 
-    public static List<DrivingFeature> minRedundancyMaxRelevance(int numberOfObservations, BitSet label, List<DrivingFeature> features, int target_num_features) {
+    public static List<DrivingFeature> minRedundancyMaxRelevance(int numberOfObservations, BitSet label, List<DrivingFeature> features, int finalNFeatures) {
 
         long t0 = System.currentTimeMillis();
         Logger.getGlobal().finer("...[mRMR] running mRMR");
@@ -33,21 +35,23 @@ public class MRMR {
 
         ArrayList<Integer> selectedFeatures = new ArrayList<>();
 
-        while (selectedFeatures.size() < target_num_features) {
+        while (selectedFeatures.size() < finalNFeatures) {
 
             int bestFeatInd = -1;
             double phi = Double.NEGATIVE_INFINITY;
 
-            // Implement incremental search
+            // Implement incremental search for each feature
             for (int i = 0; i < features.size(); i++) {
 
                 if (selectedFeatures.contains(i)) {
                     continue;
                 }
 
+                //data relevancy 
                 double D = computeMutualInformation(dataFeatureMat[i], label, numberOfObservations);
+                
+                //data redundancy
                 double R = 0;
-
                 for (int j : selectedFeatures) {
                     R = R + computeMutualInformation(dataFeatureMat[i], dataFeatureMat[j], numberOfObservations);
                 }
@@ -99,14 +103,14 @@ public class MRMR {
         bnx1.and(bnx2);
         double nx1nx2 = bnx1.cardinality();
 
-        double p_x1 = (double) x1 / numberOfObservations;
-        double p_nx1 = (double) 1 - p_x1;
-        double p_x2 = (double) x2 / numberOfObservations;
-        double p_nx2 = (double) 1 - p_x2;
-        double p_x1x2 = (double) x1x2 / numberOfObservations;
-        double p_nx1x2 = (double) nx1x2 / numberOfObservations;
-        double p_x1nx2 = (double) x1nx2 / numberOfObservations;
-        double p_nx1nx2 = (double) nx1nx2 / numberOfObservations;
+        double p_x1 = BigDecimal.valueOf(x1 / numberOfObservations).setScale(3, RoundingMode.FLOOR).doubleValue();
+        double p_nx1 = BigDecimal.valueOf(1 - p_x1).setScale(3, RoundingMode.FLOOR).doubleValue();
+        double p_x2 = BigDecimal.valueOf(x2 / numberOfObservations).setScale(3, RoundingMode.FLOOR).doubleValue();
+        double p_nx2 = BigDecimal.valueOf(1 - p_x2).setScale(3, RoundingMode.FLOOR).doubleValue();
+        double p_x1x2 = BigDecimal.valueOf(x1x2 / numberOfObservations).setScale(3, RoundingMode.FLOOR).doubleValue();
+        double p_nx1x2 = BigDecimal.valueOf(nx1x2 / numberOfObservations).setScale(3, RoundingMode.FLOOR).doubleValue();
+        double p_x1nx2 = BigDecimal.valueOf(x1nx2 / numberOfObservations).setScale(3, RoundingMode.FLOOR).doubleValue();
+        double p_nx1nx2 = BigDecimal.valueOf(nx1nx2 / numberOfObservations).setScale(3, RoundingMode.FLOOR).doubleValue();
 
         double i1, i2, i3, i4;
         //handle cases when there p(x) = 0

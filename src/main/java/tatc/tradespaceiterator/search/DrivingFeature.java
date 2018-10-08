@@ -12,7 +12,7 @@ import java.util.BitSet;
  * means X (a set of decision variables of design features) implies Y (some
  * metric about the design). DrivingFeature is immutable
  *
- * @author Prachi
+ * @author Nozomi
  */
 
 public class DrivingFeature extends AbstractFeature {
