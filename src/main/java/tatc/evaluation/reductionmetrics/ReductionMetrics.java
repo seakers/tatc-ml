@@ -93,36 +93,33 @@ public class ReductionMetrics extends AbstractModule {
     private TradespaceSearchRequest tsr;
 
     /**
-     * eval counter for the number of Orbital parameters
+     * eval counter for the number of Orbits
      */
     private int evalCounter;
-    
+
       /**
      * eval counter for the number of Ground Station parameters
      */
     private int gndStnCounter;
-    
+
       /**
      * eval counter for the number of Payload parameters
      */
     private int payloadCounter;
-    
+
     private JsonArray monosJson;
 
     public ReductionMetrics(File inputFile, File outputFile, TradespaceSearchRequest tsr, Properties properties) {
         super(inputFile, outputFile);
         this.properties = properties;
         this.tsr = tsr;
-        this.evalCounter=0;
-        this.gndStnCounter=0;
-        this.payloadCounter=0;
         OrekitConfig.init(Integer.valueOf(System.getProperty("tatc.numThreads", "1")));
     }
     
     private void updateJSON(){
-        this.monosJson.add("Orb" + Integer.toString(10000 + this.evalCounter).substring(1) + "_" + 
-                "Pay" + Integer.toString(10000 + this.payloadCounter).substring(1) + "_" + 
-                        "GS" + Integer.toString(10000 + this.gndStnCounter).substring(1));
+        this.monosJson.add("Orb" + Integer.toString(10000 + this.getEvalCounter()).substring(1) + "_" +
+                "Pay" + Integer.toString(10000 + this.getPayloadCounter()).substring(1) + "_" +
+                        "GS" + Integer.toString(10000 + this.getGndStnCounter()).substring(1));
     }
     
     public JsonArray getJSON(){
@@ -131,7 +128,7 @@ public class ReductionMetrics extends AbstractModule {
 
     @Override
     public ReductionMetrics call() throws Exception {
-
+        //Initializing parameters for the propagation of the satellites
         TimeScale timeScale = TimeScalesFactory.getUTC();
         Frame inertialFrame = FramesFactory.getEME2000();
         Frame earthFrame = FramesFactory.getITRF(IERSConventions.IERS_2003, true);
@@ -143,8 +140,7 @@ public class ReductionMetrics extends AbstractModule {
         DSMSpecification dsmSpec = JSONIO.readJSON(getInputFile(), DSMSpecification.class);
         AbsoluteDate startDate = dsmSpec.getMissionConcept().getPerformancePeriod()[0];
         AbsoluteDate endDate = dsmSpec.getMissionConcept().getPerformancePeriod()[1];
-        
-        this.evalCounter = 0;
+
         this.monosJson = new JsonArray();
  
         //coverage region
@@ -192,6 +188,7 @@ public class ReductionMetrics extends AbstractModule {
             double mass = mono.getObservatorySpecification().getStartMass();
 
             //create satellite
+            //TO DO: this mass has to be passed to the propagator. the mass in the satellite object is not used.
             Satellite sat = new Satellite(String.valueOf(i), orbit, null, payload,
                     receiver, transmitter, mass, 0);
 
@@ -213,32 +210,28 @@ public class ReductionMetrics extends AbstractModule {
         ArrayList<EventAnalysis> eventAnalyses = new ArrayList<>();
         Properties props = new Properties();
         props.setProperty("fov.saveAccess", "true");
-        EventAnalysis fovAnalysis = eaf.createGroundPointAnalysis(EventAnalysisEnum.FOV, cdefs, props);
+        FieldOfViewEventAnalysis fovAnalysis = (FieldOfViewEventAnalysis) eaf.createGroundPointAnalysis(EventAnalysisEnum.FOV, cdefs, props);
         eventAnalyses.add(fovAnalysis);
-        EventAnalysis gndStationAnalysis = eaf.createGroundStationAnalysis(EventAnalysisEnum.ACCESS, stationAssignment, properties);
+        GndStationEventAnalysis gndStationAnalysis = (GndStationEventAnalysis) eaf.createGroundStationAnalysis(EventAnalysisEnum.ACCESS, stationAssignment, properties);
         eventAnalyses.add(gndStationAnalysis);
-        FieldOfViewEventAnalysis fovEventAnalysis = new FieldOfViewEventAnalysis(startDate, endDate, inertialFrame, cdefs, propatagorFactory, true, false);
-        eventAnalyses.add(fovEventAnalysis);
         
         ArrayList<Analysis<?>> analyses = new ArrayList<>();
-        HashMap<Analysis, Satellite> anaToSat = new HashMap<>();
+        HashMap<Satellite,Analysis> anaToSat = new HashMap<>();
         for (final Satellite sat : constel.getSatellites()){
             Collection<AbstractSpacecraftAnalysis<?>> abstractAnalysis = new ArrayList<>();
             abstractAnalysis.add(new OrbitalElementsAnalysis(startDate, endDate, analysisTimeStep, sat, PositionAngle.MEAN, propatagorFactory));
             abstractAnalysis.add(new VectorAnalysis(startDate, endDate, analysisTimeStep, sat, propatagorFactory, inertialFrame) {
-                
                 @Override
                 public Vector3D getVector(SpacecraftState currentState, Frame frame) throws OrekitException {
                     return currentState.getPVCoordinates(frame).getPosition();
                 }
-                
                 @Override
                 public String getName() {
                     return String.format("position_%s", sat.getName());
                 }
             });
             analyses.add(new CompoundSpacecraftAnalysis(startDate, endDate, analysisTimeStep, sat, propatagorFactory, abstractAnalysis));
-            anaToSat.put(analyses.get(analyses.size() - 1), sat);
+            anaToSat.put(sat, analyses.get(analyses.size() - 1));
         }
         
         Scenario scen = new Scenario("", startDate, endDate,
@@ -254,22 +247,21 @@ public class ReductionMetrics extends AbstractModule {
         Map<Satellite, Map<TopocentricFrame, TimeIntervalArray>> satAccess = new HashMap<>();
         
         for (Satellite sat : satellites){
-            satAccess.put(sat, new HashMap<>(fovEventAnalysis.getSatelliteAccesses(cdef, sat)));
+            satAccess.put(sat, fovAnalysis.getSatelliteAccesses(cdef, sat));
         }
-        
+
+
         //get TCavg, TCmin, TCmax
         //TCmin
         ArrayList<Double> firstRiseTimeValues = new ArrayList<>();
         //TCmax
         ArrayList<Double> lastRiseTimeValues = new ArrayList<>();
-            
-
         // For every orbital and vector analysis in analysis array
-        for (int j = 0; j < analyses.size(); j++) {
+
+        for (Satellite sat : satellites){
             setGndStnCounter(0);
             setPayloadCounter(0);
-            Analysis analysis = analyses.get(j);
-            Satellite sat = anaToSat.get(analysis);
+            Analysis analysis = anaToSat.get(sat);
             Collection<Record> orbitAnalysis = new ArrayList<>();
             Collection<Record> vectorAnalysis = new ArrayList<>();
 
@@ -282,7 +274,7 @@ public class ReductionMetrics extends AbstractModule {
                 }
             }
 
-            Map<TopocentricFrame, TimeIntervalArray> access = satAccess.get(sat);
+            Map<TopocentricFrame, TimeIntervalArray> satAccesses = satAccess.get(sat);
 
             CoarsePropObservatories coarse = new CoarsePropObservatories(orbitAnalysis, vectorAnalysis);
             File file = new File(System.getProperty("tatc.monos"), "Orb" + Integer.toString(100000 + getEvalCounter()).substring(1));
@@ -298,7 +290,7 @@ public class ReductionMetrics extends AbstractModule {
             jsonObservatory.addProperty("startDate", monoSpecs.get(sat).getMissionConcept().getPerformancePeriod()[0].toString());
             jsonObservatory.addProperty("endDate", monoSpecs.get(sat).getMissionConcept().getPerformancePeriod()[1].toString());
             jsonObservatory.addProperty("startEcc", monoSpecs.get(sat).getSatelliteOrbit().getStartEcc());
-            jsonObservatory.addProperty("startIncl", monoSpecs.get(sat).getSatelliteOrbit().getStartIncl());
+            jsonObservatory.addProperty("startIncl", Math.toDegrees(monoSpecs.get(sat).getSatelliteOrbit().getStartIncl()));
             jsonObservatory.addProperty("startPer", monoSpecs.get(sat).getSatelliteOrbit().getStartPer());
             jsonObservatory.addProperty("startRAAN", monoSpecs.get(sat).getSatelliteOrbit().getStartRAAN());
             jsonObservatory.addProperty("startSMA", monoSpecs.get(sat).getSatelliteOrbit().getStartSMA());
@@ -315,30 +307,29 @@ public class ReductionMetrics extends AbstractModule {
             }
             //finish writing the observatory specs in json file
 
-            GroundEventAnalyzer gndStn = new GroundEventAnalyzer(((GndStationEventAnalysis) gndStationAnalysis).getEvents(sat));
+            GroundEventAnalyzer gndStn = new GroundEventAnalyzer(gndStationAnalysis.getEvents(sat));
 
             Set<GndStation> gndStation = stationAssignment.get(sat);
 
             //get all the points(keys) for the map
             Collection<TopocentricFrame> keys = new ArrayList<>();
-            Map<TopocentricFrame, TimeIntervalArray> accesses = new HashMap<>();
+            Map<TopocentricFrame, TimeIntervalArray> gndAccesses = new HashMap<>();
             for (GndStation gnd : gndStation) {
                 TopocentricFrame point = gnd.getBaseFrame();
                 keys.add(point);
-                accesses = gndStn.getEvents(keys);
+                gndAccesses = gndStn.getEvents(keys);
             }
             
             this.updateJSON();
-            setGndStnCounter(0);
-
             for (GndStation gnd : gndStation) {
                 File gndStationFile = new File(file, "GS" + Integer.toString(10000 + getGndStnCounter()).substring(1));
                 gndStationFile.mkdir();
+                TopocentricFrame gndPoint=gnd.getBaseFrame();
 
-                GndStationAccessMetrics gndStnMetric = new GndStationAccessMetrics(accesses.get(gnd.getBaseFrame()));
+                GndStationAccessMetrics gndStnMetric = new GndStationAccessMetrics(gndAccesses.get(gndPoint));
 
-                double lat = Math.toDegrees(gnd.getBaseFrame().getPoint().getLatitude());
-                double lon = Math.toDegrees(gnd.getBaseFrame().getPoint().getLongitude());
+                double lat = Math.toDegrees(gndPoint.getPoint().getLatitude());
+                double lon = Math.toDegrees(gndPoint.getPoint().getLongitude());
 
                 char northOrSouth;
                 char eastOrWest;
@@ -377,8 +368,8 @@ public class ReductionMetrics extends AbstractModule {
                 }
                 station.addProperty("commBandTypes", commBand);
                 station.addProperty("designation", "0.0");
-                station.addProperty("lat", Math.toDegrees(gnd.getBaseFrame().getPoint().getLatitude()));
-                station.addProperty("lon", Math.toDegrees(gnd.getBaseFrame().getPoint().getLongitude()));
+                station.addProperty("lat", Math.toDegrees(gndPoint.getPoint().getLatitude()));
+                station.addProperty("lon", Math.toDegrees(gndPoint.getPoint().getLongitude()));
 
                 JsonObject jsonGroundNetwork = new JsonObject();
                 jsonGroundNetwork.addProperty("designation", "0.0");
@@ -405,10 +396,9 @@ public class ReductionMetrics extends AbstractModule {
             //save point of interests
             int poiCount = 0;
             
-            for (Map.Entry<TopocentricFrame, TimeIntervalArray> entry : access.entrySet()) {
+            for (TopocentricFrame point : satAccesses.keySet()) {
 
-                TopocentricFrame point = entry.getKey();
-                TimeIntervalArray time = entry.getValue();
+                TimeIntervalArray time = satAccesses.get(point);
                 
                 if (time.getRiseSetTimes().isEmpty()) {
                     firstRiseTimeValues.add(null);
@@ -470,21 +460,20 @@ public class ReductionMetrics extends AbstractModule {
                 } catch (IOException ex) {
                     Logger.getLogger(JSONIO.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                //finish writing istruments specs in json file
+                //finish writing instruments specs in json file
 
                 poiCount++;
             }
             setEvalCounter(getEvalCounter()+1);
         }
-   
-        //compute metrics
-        metrics = computeMetrics((FieldOfViewEventAnalysis) fovAnalysis, cdef,
-                (GndStationEventAnalysis) gndStationAnalysis);
 
         //save all outputs
-        GroundEventAnalyzer fovGea = new GroundEventAnalyzer(((GroundEventAnalysis) fovAnalysis).getEvents(cdef));
-        GroundEventAnalyzer gndGea = new GroundEventAnalyzer(((GndStationEventAnalysis) gndStationAnalysis).getEvents());
+        GroundEventAnalyzer fovGea = new GroundEventAnalyzer(fovAnalysis.getEvents(cdef));
+        GroundEventAnalyzer gndGea = new GroundEventAnalyzer(gndStationAnalysis.getEvents());
         LocalMetricsImaging lmi = new LocalMetricsImaging(fovGea);
+
+        //compute metrics
+        metrics = computeMetrics(fovGea, gndGea);
         
         //get TCmin and TCmax
         double TCmin, TCmax, TCavg;
@@ -513,18 +502,17 @@ public class ReductionMetrics extends AbstractModule {
      *
      * @return
      */
-    private double[] computeMetrics(FieldOfViewEventAnalysis fovAnalysis, CoverageDefinition cdef,
-            GndStationEventAnalysis gstAnalysis) {
+    private double[] computeMetrics(GroundEventAnalyzer fov, GroundEventAnalyzer stGea) {
         double[] out = new double[2];
-        GroundEventAnalyzer fovGea = new GroundEventAnalyzer(fovAnalysis.getEvents(cdef));
         Properties prop = new Properties();
         //average revisit time
-        out[0] = fovGea.getStatistics(AnalysisMetric.DURATION, false, prop).getMean();
-        out[1] = fovGea.getStatistics(AnalysisMetric.MEAN_TIME_TO_T, false, prop).getMean();
-        
+        out[0] = fov.getStatistics(AnalysisMetric.DURATION, false, prop).getMean();
+        //mean response time
+        out[1] = fov.getStatistics(AnalysisMetric.MEAN_TIME_TO_T, false, prop).getMean();
+
         //total ground station access time but add up the individual satellite links
-        //GroundEventAnalyzer stGea = new GroundEventAnalyzer(gstAnalysis.getEvents());
         //out[1] = stGea.getStatistics(AnalysisMetric.DURATION, false,prop).getMean();
+
         if (Double.isNaN(out[1])) {
             out[1] = Double.POSITIVE_INFINITY;
         }
