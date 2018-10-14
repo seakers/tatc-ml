@@ -34,8 +34,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import mining.label.AbstractPopulationLabeler;
-import mining.label.NondominatedSortingLabeler;
 import org.moeaframework.algorithm.EpsilonMOEA;
 import org.moeaframework.core.Algorithm;
 import org.moeaframework.core.EpsilonBoxDominanceArchive;
@@ -58,7 +56,9 @@ import tatc.tradespaceiterator.TradespaceSearchRequest;
 import tatc.util.JSONIO;
 import tatc.tradespaceiterator.StandardFormProblemFullFact;
 import tatc.tradespaceiterator.StandardFormProblemGA;
+import tatc.tradespaceiterator.search.AbstractPopulationLabeler;
 import tatc.tradespaceiterator.search.KDOSearch;
+import tatc.tradespaceiterator.search.PopulationLabeler;
 
 
 public class TATC {
@@ -315,7 +315,7 @@ public class TATC {
                             selection, null, initialization, comparator);
             AOSVariation aosStrategy3 = new AOSVariationSI(operatorSelector3, creditAssignment3, popSize);
             AOSMOEA aos3 = new AOSMOEA(emoea3, aosStrategy3, true);
-            AbstractPopulationLabeler labeler = new NondominatedSortingLabeler(.25);
+            AbstractPopulationLabeler labeler = new PopulationLabeler();
             //ecs.submit(new KDOSearch(aos3, typProperties, labeler, ops, new File(mainPath.getParent(), "results").getAbsolutePath() + File.separator + "result", innovizeAssignment));
             KDOSearch kdo = new KDOSearch(aos3, typProperties, labeler, ops, new File(mainPath.getParent(), "results").getAbsolutePath() + File.separator + "mining_results", "mining");
             try {

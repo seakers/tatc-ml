@@ -20,7 +20,6 @@ import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import knowledge.operator.EOSSOperatorCreator;
-import mining.label.AbstractPopulationLabeler;
 import org.moeaframework.algorithm.AbstractEvolutionaryAlgorithm;
 import org.moeaframework.core.Algorithm;
 import org.moeaframework.core.Population;
@@ -148,13 +147,18 @@ public class KDOSearch implements Callable<Algorithm> {
 
                 //conduct learning
                 Population allSolnPop = new Population(allSolutions);
-
+                
+                //labels all the solutions in the history with an integer
                 dataLabeler.label(allSolnPop);
                 String labledDataFile = savePath + File.separator + name + "_" + String.valueOf(opResetCount) + "_labels.csv";
-                //TODO remove this//lableIO.saveLabels(allSolnPop, labledDataFile, ",");
+                lableIO.saveLabels(allSolnPop, labledDataFile, ",");
                 
                 String featureDataFile = savePath + File.separator + name + "_" + String.valueOf(opResetCount) + "_features.csv";
 
+                /**
+                 * behavioral are the ones that lie on the pareto front
+                 * and the ones we are interested in. They have the label 1.
+                **/
                 ArrayList<Boolean> behavioral = new ArrayList<>();
                 ArrayList<double[]> attributes = new ArrayList<>();
 
@@ -203,6 +207,5 @@ public class KDOSearch implements Callable<Algorithm> {
             }
         }
         return alg;
-
     }
 }

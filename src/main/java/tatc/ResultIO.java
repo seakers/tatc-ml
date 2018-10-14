@@ -24,6 +24,7 @@ import org.moeaframework.core.Population;
 import org.moeaframework.core.PopulationIO;
 import org.moeaframework.core.Solution;
 import tatc.tradespaceiterator.search.DrivingFeature;
+import tatc.tradespaceiterator.search.PopulationLabeler;
 
 public class ResultIO implements Serializable{
 
@@ -214,8 +215,8 @@ public class ResultIO implements Serializable{
             int numDec = population.get(0).getNumberOfVariables();
             int numObj = population.get(0).getNumberOfObjectives();
             for (Solution individual : population) {
-                if (individual.hasAttribute(PopulationLabeler.CLASSLABEL)) {
-                    fw.append(individual.getAttribute(PopulationLabeler.CLASSLABEL) + separator);
+                if (individual.hasAttribute(PopulationLabeler.LABELATTRIB)) {
+                    fw.append(individual.getAttribute(PopulationLabeler.LABELATTRIB) + separator);
                     for (int i = 0; i < numDec; i++) {
                         fw.append(String.format("%s%s", individual.getVariable(i), separator));
                     }
@@ -256,12 +257,13 @@ public class ResultIO implements Serializable{
         try (FileWriter fw = new FileWriter(new File(filename))) {
 
             //write the header
-            fw.append(String.format("dec#=value,Support,FConfidence,RConfidence,Lift"));
+            fw.append(String.format("ID,dec#=value,Support,FConfidence,RConfidence,Lift"));
             fw.append("\n");
                      
             //write feature
             for (int i = 0; i < features.size(); i++) {
                 DrivingFeature thisFeature = features.get(i);
+                fw.append(String.format("%d%s", i, separator));
                 fw.append(String.format("%s%s", thisFeature.getName(), separator));
                 fw.append(String.format("%f%s", thisFeature.getSupport(), separator));
                 fw.append(String.format("%f%s", thisFeature.getFConfidence(), separator));
@@ -278,55 +280,4 @@ public class ResultIO implements Serializable{
 
         return true;
     }
-    
-    public static abstract class PopulationLabeler {
-    
-    /**
-     * This is the attribute used to store the label values.
-     */
-     
-    private static String CLASSLABEL = "label";
-    private static String DECISION = "decision";
-    private static String OBJECTIVE = "objective";
-
-    /**
-     * This method will label the solutions and store the label information in
-     * the attributes of the solutions in the population. The attribute is
-     * stored as "label"
-     *
-     * @param population
-     * @return a population with the individuals labeled
-     */
-    public Population label(Population population) {
-        process(population);
-        for (Solution individual : population) {
-            individual.setAttribute(CLASSLABEL, label(individual));
-        }
-        return population;
-    }
-
-    /**
-     * This method should be overridden if the population must be processed
-     * before its individuals are labeled. For example, if labeling the
-     * non-dominated solutions, non-dominated filtering must be applied before
-     * labels are given. The default method is to remove any old label
-     * attributes from the solutions
-     *
-     * @param population the population to process
-     */
-    protected void process(Population population) {
-        for (Solution individual : population) {
-            individual.removeAttribute(CLASSLABEL);
-        }
-    }
-
-    /**
-     * This method will label a given individual with an integer value.
-     *
-     * @param individual
-     * @return the label to
-     */
-    protected abstract int label(Solution individual);
 }
-}
-
