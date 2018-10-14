@@ -3,14 +3,14 @@
     "StartEpoch": 1455213665,
     "PerformancePeriod": "0:604800",
     "MissionDuration": "999999999",
-    "Granularity": 12,
+    "Granularity": 30,
     "AreaOfInterest": "-30:30",
     "ObjectsOfInterest": "Sun Moon",
     "GroundStationOptions": "NENgov",
     "LaunchPreferences": "launchVehicles.txt",
     "MissionDirector": "Academic",
     "Propulsion": 1,
-    "SearchPreferences": "FullFactorial"
+    "SearchPreferences": "GA"
   },
   "manifestOfMonoSpecifications": [
     {
@@ -18,14 +18,14 @@
         "StartEpoch": 1455213665,
         "PerformancePeriod": "0:604800",
         "MissionDuration": "999999999",
-        "Granularity": 12,
+        "Granularity": 30,
         "AreaOfInterest": "-30:30",
         "ObjectsOfInterest": "Sun Moon",
         "GroundStationOptions": "NENgov",
         "LaunchPreferences": "launchVehicles.txt",
         "MissionDirector": "Academic",
         "Propulsion": 1,
-        "SearchPreferences": "FullFactorial"
+        "SearchPreferences": "GA"
       },
       "satelliteOrbit": {
         "startEcc": 0.0,
@@ -34,71 +34,6 @@
         "startPer": 0.0,
         "startRAAN": 0.0,
         "startTrueA": 0.0
-      },
-      "observatorySpecification": {
-        "startMass": 2200.0,
-        "alongAngularScan": {
-          "coneAngle": 0.6108652381980153,
-          "slewOfCenter": 0.0
-        },
-        "crossAngularScan": {
-          "coneAngle": 0.6108652381980153,
-          "slewOfCenter": 0.0
-        },
-        "angularScanRate": 1.5707963267948966,
-        "startAngScnPhase": -1.0,
-        "commBandTypes": "X",
-        "commDataRate": 1.5707963267948966
-      },
-      "instrumentSpecification": {
-        "conOpsTypeCode": 0,
-        "conOpsPartner": 0,
-        "mass": 420.0,
-        "power": 590.0,
-        "spectrum": [
-          482.0,
-          562.0,
-          655.0,
-          865.0,
-          1610.0,
-          2200.0
-        ],
-        "spectralResolution": 50.0,
-        "minRadiometricRes": 9,
-        "alongFieldOfView": 20.0,
-        "crossFieldOfView": 57.0,
-        "min_iFieldOfView": 0.0024,
-        "isRectangularFOV": true,
-        "measurementTime": 30.0,
-        "maxDwnlnkLatency": 1.0,
-        "maxDataRate": 0.5,
-        "solarConditions": "no_pref",
-        "sunglintPreference": "no_pref",
-        "minOccultationAlt": 100.0,
-        "maxOccultationAlt": 450.0
-      }
-    },
-    {
-      "missionConcept": {
-        "StartEpoch": 1455213665,
-        "PerformancePeriod": "0:604800",
-        "MissionDuration": "999999999",
-        "Granularity": 12,
-        "AreaOfInterest": "-30:30",
-        "ObjectsOfInterest": "Sun Moon",
-        "GroundStationOptions": "NENgov",
-        "LaunchPreferences": "launchVehicles.txt",
-        "MissionDirector": "Academic",
-        "Propulsion": 1,
-        "SearchPreferences": "FullFactorial"
-      },
-      "satelliteOrbit": {
-        "startEcc": 0.0,
-        "startIncl": 30.000000000000004,
-        "startSMA": 6778.137,
-        "startPer": 0.0,
-        "startRAAN": 0.0,
-        "startTrueA": 180.0
       },
       "observatorySpecification": {
         "startMass": 2200.0,

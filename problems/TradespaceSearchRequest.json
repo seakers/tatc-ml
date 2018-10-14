@@ -3,21 +3,21 @@
                      "StartEpoch"          : 1455213665               ,
                      "PerformancePeriod"   : "0:604800"  ,
                      "MissionDuration"     : "999999999"  ,
-                     "Granularity"         : 12 ,
+                     "Granularity"         : 30 ,
                      "AreaOfInterest"      : "-30:30"  ,
                      "ObjectsOfInterest"   : "Sun Moon"               ,
                      "GroundStationOptions": "NENgov"      ,
                      "LaunchPreferences"   : "launchVehicles.txt",
                      "MissionDirector"     : "Academic",
                      "Propulsion"          : 1,
-                     "SearchPreferences"   : "FullFactorial"
+                     "SearchPreferences"   : "GA"
                     },
 
                      "SatelliteOrbits": {
                      "ExistingSatelliteOptions"   : "ExistingSatelliteListEx.txt",
-                     "NumberOfNewSatellites"      : "1:18"                    ,
-                     "AltitudeRangesOfInterest"   : "400:800"              ,
-                     "InclinationRangesOfInterest": "30:90"     ,
+                     "NumberOfNewSatellites"      : "1:2"                    ,
+                     "AltitudeRangesOfInterest"   : "400:500"              ,
+                     "InclinationRangesOfInterest": "30:40"     ,
                      "SpecialOrbits"              : "SSO"                         ,
                      "PropagationFidelity"        : 0
                     },

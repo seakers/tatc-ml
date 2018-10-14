@@ -5,38 +5,40 @@
  */
 package tatc.tradespaceiterator.search;
 
+import java.io.BufferedReader;
 import seakers.aos.aos.AOS;
-import seakers.aos.history.AOSHistoryIO;
 import seakers.aos.operatorselectors.replacement.OperatorReplacementStrategy;
-import seakers.architecture.io.ResultIO;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import knowledge.operator.EOSSOperatorCreator;
-import mining.DrivingFeaturesGenerator;
 import mining.label.AbstractPopulationLabeler;
-import mining.label.LabelIO;
 import org.moeaframework.algorithm.AbstractEvolutionaryAlgorithm;
 import org.moeaframework.core.Algorithm;
 import org.moeaframework.core.Population;
 import org.moeaframework.core.Solution;
 import org.moeaframework.core.Variation;
 import org.moeaframework.core.operator.CompoundVariation;
-import org.moeaframework.core.operator.OnePointCrossover;
-import org.moeaframework.core.operator.binary.BitFlip;
 import org.moeaframework.util.TypedProperties;
+import tatc.ResultIO;
 
 /**
- * This method applies data mining and innovization to
- * increase the efficiency of the search
- * 
+ * This method applies data mining and innovization to increase the efficiency
+ * of the search
+ *
  * @author Prachi
  */
-public class KDOSearch implements Callable<Algorithm>{
-    
-       /**
+public class KDOSearch implements Callable<Algorithm> {
+
+    /**
      * The path to save the results
      */
     private final String savePath;
@@ -58,12 +60,12 @@ public class KDOSearch implements Callable<Algorithm>{
     /**
      * Class that supports method to label the interesting data
      */
-    private final AbstractPopulationLabeler dataLabeler;
+    private AbstractPopulationLabeler dataLabeler;
 
     /**
      * Responsible for exporting the labels
      */
-    private final LabelIO lableIO;
+    private final ResultIO lableIO;
 
     /**
      * operator creator for EOSS assignment problems
@@ -91,7 +93,7 @@ public class KDOSearch implements Callable<Algorithm>{
         this.savePath = savePath;
         this.name = name;
         this.dataLabeler = dataLabeler;
-        this.lableIO = new LabelIO();
+        this.lableIO = new ResultIO();
         this.ops = ops;
         if (!(ops.getOperatorCreator() instanceof EOSSOperatorCreator)) {
             throw new IllegalArgumentException(String.format("Expected EOSSOperatorCreator as operator creation strategy. Found %s", ops.getOperatorCreator().getClass().getSimpleName()));
@@ -126,10 +128,11 @@ public class KDOSearch implements Callable<Algorithm>{
             Population pop = ((AbstractEvolutionaryAlgorithm) alg).getPopulation();
 
             int nFuncEvals = alg.getNumberOfEvaluations();
+
             //Check if the operators need to be replaced
             if (ops.checkTrigger(alg)) {
                 System.out.println(String.format("Operator replacement event triggered at %d func eval", nFuncEvals));
-                
+
                 //for now reset the qualities
                 alg.getOperatorSelector().reset();
 
@@ -145,109 +148,61 @@ public class KDOSearch implements Callable<Algorithm>{
 
                 //conduct learning
                 Population allSolnPop = new Population(allSolutions);
+
                 dataLabeler.label(allSolnPop);
                 String labledDataFile = savePath + File.separator + name + "_" + String.valueOf(opResetCount) + "_labels.csv";
-                lableIO.saveLabels(allSolnPop, labledDataFile, ",");
+                //TODO remove this//lableIO.saveLabels(allSolnPop, labledDataFile, ",");
+                
+                String featureDataFile = savePath + File.separator + name + "_" + String.valueOf(opResetCount) + "_features.csv";
 
-                String featureDataFile = savePath + File.separator + name + "_" + String.valueOf(opResetCount) + "_features.txt";
+                ArrayList<Boolean> behavioral = new ArrayList<>();
+                ArrayList<double[]> attributes = new ArrayList<>();
 
-                //The association rule mining engine
-                DrivingFeaturesGenerator dfg = new DrivingFeaturesGenerator(alg.getProblem().getNumberOfVariables());
-                dfg.getDrivingFeatures(labledDataFile, featureDataFile, nOpsToAdd);
-
-                opCreator.learnFeatures(new File(featureDataFile));
-
-                //add new operators
-                Collection<Variation> newOperators = opCreator.createOperator(nOpsToAdd);
-                switch (properties.getString("kdomode", "operator")) {
-                    case "operator":
-                        //combines all extracted features into n operators 
-                        for (Variation newOp : newOperators) {
-                            StringBuilder sb = new StringBuilder();
-                            OnePointCrossover cross = new OnePointCrossover(properties.getDouble("crossoverProbability", 0.0));
-                            sb.append(cross.getClass().getSimpleName()).append(" + ");
-                            sb.append(newOp.toString()).append(" + ");
-                            CompoundVariation repair = new CompoundVariation(cross, newOp);
-                            repair.setName(sb.toString());
-                            alg.getOperatorSelector().addOperator(repair);
+                File file = new File(labledDataFile);
+                try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+                    String line = br.readLine(); //skip this line because it's the header
+                    String nextLine = br.readLine();
+                    while (nextLine != null) {
+                        String[] str = nextLine.split(",");
+                        if (Integer.parseInt(str[0]) == 1) {
+                            behavioral.add(true);
+                        } else {
+                            behavioral.add(false);
                         }
-                        break;
-                    case "repair":
-                        //combines all extracted features into one operator
-                        StringBuilder sb = new StringBuilder();
-                        CompoundVariation repair = new CompoundVariation();
-                        OnePointCrossover cross = new OnePointCrossover(properties.getDouble("crossoverProbability", 1.0));
-                        sb.append(cross.getClass().getSimpleName()).append(" + ");
-                        repair.appendOperator(cross);
-                        for (Variation newOp : newOperators) {
-                            repair.appendOperator(newOp);
-                            sb.append(newOp.toString()).append(" + ");
+
+                        /**
+                         * since the last two columns are metrics and not attributes,
+                         * we will skip adding the metrics in the attributes list
+                         */
+                        double[] attrb = new double[(str.length-2) - 1]; 
+                        for (int i = 1; i < str.length-2; i++) {
+                            attrb[i - 1] = Double.parseDouble(str[i]);
                         }
-                        BitFlip bitf = new BitFlip(properties.getDouble("mutationProbability", 1. / (double) alg.getProblem().getNumberOfVariables()));
-                        sb.append(bitf.getClass().getSimpleName());
-                        repair.appendOperator(bitf);
-                        repair.setName(sb.toString());
-                        alg.getOperatorSelector().addOperator(repair);
-                        break;
-                    default:
-                        throw new UnsupportedOperationException("kdomod needs to be set to operator or repair");
-                }
-                alg.getOperatorSelector().reset();
-                for (Variation op : alg.getOperatorSelector().getOperators()) {
-                    if (op instanceof CompoundVariation) {
-                        System.out.println(String.format("Using: %s", ((CompoundVariation) op).getName()));
-                    } else {
-                        System.out.println(String.format("Using: %s", op.toString()));
+                        attributes.add(attrb);
+                        nextLine = br.readLine();
                     }
+                } catch (IOException ex) {
+                    Logger.getLogger(KDOSearch.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                opResetCount++;
-            }
 
-            //print out the search stats every once in a while
-            if (nFuncEvals % 500 == 0) {
-                System.out.println("NFE: " + alg.getNumberOfEvaluations());
-                System.out.print("Popsize: " + ((AbstractEvolutionaryAlgorithm) alg).getPopulation().size());
-                System.out.println("  Archivesize: " + ((AbstractEvolutionaryAlgorithm) alg).getArchive().size());
-            }
-            alg.step();
+                double[][] dataset = new double[attributes.size()][attributes.get(0).length];
+                BitSet behavioralSet = new BitSet(behavioral.size()); 
 
-            //since new solutions are put at end of population, only check the last few to see if any new solutions entered population
-            for (int i = 1; i < 3; i++) {
-                Solution s = pop.get(pop.size() - i);
-                s.setAttribute("NFE", alg.getNumberOfEvaluations());
-                allSolutions.add(s);
-            }
-        }
+                for (int i = 0; i < behavioral.size(); i++) {
+                    dataset[i] = attributes.get(i);
+                    behavioralSet.set(i, behavioral.get(i));
+                }
 
-        Population allpop = new Population();
-        Iterator<Solution> iter = allSolutions.iterator();
-        while (iter.hasNext()) {
-            allpop.add(iter.next());
-        }
-
-        alg.terminate();
-        long finishTime = System.currentTimeMillis();
-        System.out.println("Done with optimization. Execution time: " + ((finishTime - startTime) / 1000) + "s");
-
-        String filename = savePath + File.separator + alg.getClass().getSimpleName() + "_" + name;
-        ResultIO.savePopulation(((AbstractEvolutionaryAlgorithm) alg).getPopulation(), filename);
-        ResultIO.savePopulation(allpop, filename + "_all");
-        ResultIO.saveObjectives(alg.getResult(), filename);
-
-        if (alg instanceof AOS) {
-            AOS algAOS = (AOS) alg;
-            if (properties.getBoolean("saveQuality", false)) {
-                AOSHistoryIO.saveQualityHistory(algAOS.getQualityHistory(), new File(savePath + File.separator + name + ".qual"), ",");
-            }
-            if (properties.getBoolean("saveCredits", false)) {
-                AOSHistoryIO.saveCreditHistory(algAOS.getCreditHistory(), new File(savePath + File.separator + name + ".credit"), ",");
-            }
-            if (properties.getBoolean("saveSelection", false)) {
-                AOSHistoryIO.saveSelectionHistory(algAOS.getSelectionHistory(), new File(savePath + File.separator + name + ".hist"), ",");
+                AssociationRuleMining arm = new AssociationRuleMining(dataset, true);
+                arm.run(behavioralSet, 0.0, 0.0, 6);
+                
+                List<DrivingFeature> topFeatures = arm.getTopFeatures(6, FeatureMetric.FCONFIDENCE);
+                
+                List<DrivingFeature> bestFeatures = MRMR.minRedundancyMaxRelevance(attributes.size(), behavioralSet, topFeatures, 4);
+                lableIO.saveFeatures(bestFeatures, featureDataFile, ",");
             }
         }
-
         return alg;
-    }
 
+    }
 }

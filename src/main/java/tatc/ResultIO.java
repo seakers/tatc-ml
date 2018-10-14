@@ -6,13 +6,15 @@ package tatc;
 
 /**
  *
- * @author Nozomi
+ * @author Prachi
  */
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,14 +23,12 @@ import org.moeaframework.analysis.collector.InstrumentedAlgorithm;
 import org.moeaframework.core.Population;
 import org.moeaframework.core.PopulationIO;
 import org.moeaframework.core.Solution;
+import tatc.tradespaceiterator.search.DrivingFeature;
 
-public class ResultIO {
+public class ResultIO implements Serializable{
 
-    /**
-     * Prevent the creation of this object
-     */
-    private ResultIO() {
-
+    public ResultIO() {
+        super();
     }
 
     /**
@@ -176,4 +176,157 @@ public class ResultIO {
         return PopulationIO.read(new File(filename));
     }
 
+
+    /**
+     * This method will save the label of each individual stored in the
+     * population to a dlm file with a user specified separator. Only
+     * individuals with a label attribute will be saved. In addition to the
+     * label, the decision values and objective values will be saved in the file
+     * as well. If the population is empty, this method does not attempt to save
+     * to any file and returns false
+     *
+     * @param population
+     * @param filename
+     * @param separator
+     * @return True if a file is successfully saved. Else false.
+     */
+    public boolean saveLabels(Population population, String filename, String separator) {
+        if (population.isEmpty()) {
+            return false;
+        }
+        //Only try saving populations that are not empty
+        try (FileWriter fw = new FileWriter(new File(filename))) {
+
+            //write the header
+            fw.append(String.format("label%s", separator));
+            for (int i = 0; i < population.get(0).getNumberOfVariables(); i++) {
+                fw.append(String.format("dec%d", i) + separator);
+            }
+            for (int i = 0; i < population.get(0).getNumberOfObjectives(); i++) {
+                if (i == population.get(0).getNumberOfObjectives() - 1) {
+                    fw.append(String.format("obj%d\n", i));
+                } else {
+                    fw.append(String.format("obj%d%s", i, separator));
+                }
+            }
+
+            //Write information of each individual
+            int numDec = population.get(0).getNumberOfVariables();
+            int numObj = population.get(0).getNumberOfObjectives();
+            for (Solution individual : population) {
+                if (individual.hasAttribute(PopulationLabeler.CLASSLABEL)) {
+                    fw.append(individual.getAttribute(PopulationLabeler.CLASSLABEL) + separator);
+                    for (int i = 0; i < numDec; i++) {
+                        fw.append(String.format("%s%s", individual.getVariable(i), separator));
+                    }
+                    for (int i = 0; i < numObj; i++) {
+                        if (i == numObj - 1) {
+                            fw.append(String.format("%f\n", individual.getObjective(i)));
+                        } else {
+                            fw.append(String.format("%f%s", individual.getObjective(i), separator));
+                        }
+                    }
+                }
+            }
+            fw.flush();
+        } catch (IOException ex) {
+            Logger.getLogger(ResultIO.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * This method will save the top features extracted from Apriori algorithm
+     * to a dlm file with a user specified separator. If the population is
+     * empty, this method does not attempt to save to any file and returns false
+     *
+     * @param features
+     * @param filename
+     * @param separator
+     * @return True if a file is successfully saved. Else false.
+     */
+    public boolean saveFeatures(List<DrivingFeature> features, String filename, String separator) {
+        if (features.isEmpty()) {
+            return false;
+        }
+
+        //Only try saving populations that are not empty
+        try (FileWriter fw = new FileWriter(new File(filename))) {
+
+            //write the header
+            fw.append(String.format("dec#=value,Support,FConfidence,RConfidence,Lift"));
+            fw.append("\n");
+                     
+            //write feature
+            for (int i = 0; i < features.size(); i++) {
+                DrivingFeature thisFeature = features.get(i);
+                fw.append(String.format("%s%s", thisFeature.getName(), separator));
+                fw.append(String.format("%f%s", thisFeature.getSupport(), separator));
+                fw.append(String.format("%f%s", thisFeature.getFConfidence(), separator));
+                fw.append(String.format("%f%s", thisFeature.getRConfidence(), separator));
+                fw.append(String.format("%f%s", thisFeature.getLift(), separator));
+
+                fw.append("\n");
+            }
+            fw.flush();
+        } catch (IOException ex) {
+            Logger.getLogger(ResultIO.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+
+        return true;
+    }
+    
+    public static abstract class PopulationLabeler {
+    
+    /**
+     * This is the attribute used to store the label values.
+     */
+     
+    private static String CLASSLABEL = "label";
+    private static String DECISION = "decision";
+    private static String OBJECTIVE = "objective";
+
+    /**
+     * This method will label the solutions and store the label information in
+     * the attributes of the solutions in the population. The attribute is
+     * stored as "label"
+     *
+     * @param population
+     * @return a population with the individuals labeled
+     */
+    public Population label(Population population) {
+        process(population);
+        for (Solution individual : population) {
+            individual.setAttribute(CLASSLABEL, label(individual));
+        }
+        return population;
+    }
+
+    /**
+     * This method should be overridden if the population must be processed
+     * before its individuals are labeled. For example, if labeling the
+     * non-dominated solutions, non-dominated filtering must be applied before
+     * labels are given. The default method is to remove any old label
+     * attributes from the solutions
+     *
+     * @param population the population to process
+     */
+    protected void process(Population population) {
+        for (Solution individual : population) {
+            individual.removeAttribute(CLASSLABEL);
+        }
+    }
+
+    /**
+     * This method will label a given individual with an integer value.
+     *
+     * @param individual
+     * @return the label to
+     */
+    protected abstract int label(Solution individual);
 }
+}
+

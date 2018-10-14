@@ -144,7 +144,7 @@ public class ReductionMetrics extends AbstractModule {
         AbsoluteDate startDate = dsmSpec.getMissionConcept().getPerformancePeriod()[0];
         AbsoluteDate endDate = dsmSpec.getMissionConcept().getPerformancePeriod()[1];
         
-//        this.evalCounter = 0;
+        this.evalCounter = 0;
         this.monosJson = new JsonArray();
  
         //coverage region
@@ -415,9 +415,6 @@ public class ReductionMetrics extends AbstractModule {
                     lastRiseTimeValues.add(null);
                 }
                 else {
-                    System.out.println(time.getRiseAndSetTimesList().length);
-                    System.out.println(time.getRiseSetTimes().isEmpty());
-                    System.out.println(time.getRiseSetTimes().size());
                     firstRiseTimeValues.add(time.getRiseSetTimes().get(0).getTime());
                     lastRiseTimeValues.add(time.getRiseSetTimes().get(time.getRiseSetTimes().size()-2).getTime());
                 }
@@ -579,8 +576,7 @@ public class ReductionMetrics extends AbstractModule {
         HashSet<GndStation> out = new HashSet<>(specs.size());
         int groundStationCount = 0;
         for (GroundStationSpecification spec : specs) {
-            GeodeticPoint pt = new GeodeticCoordinates(
-                    Math.toRadians(spec.getLatitude()), Math.toRadians(spec.getLongitude()), spec.getAltitude());
+            GeodeticPoint pt = new GeodeticPoint(Math.toRadians(spec.getLatitude()), Math.toRadians(spec.getLongitude()), spec.getAltitude());
             HashSet<CommunicationBand> bands = new HashSet<>();
             for (String str : spec.getCommBandType()) {
                 bands.add(CommunicationBand.get(str));
