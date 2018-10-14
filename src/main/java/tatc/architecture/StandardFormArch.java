@@ -18,8 +18,11 @@ public class StandardFormArch extends Solution {
 
     private static final long serialVersionUID = -453938510114132596L;
 
+    private Set<MonolithVariable> existingSatellites;
+
     public StandardFormArch(int numberOfVariables, int numberOfObjectives, Set<MonolithVariable> existingSatellites) {
         super(numberOfVariables, numberOfObjectives);
+        this.existingSatellites=existingSatellites;
     }
 
     /**
@@ -28,6 +31,10 @@ public class StandardFormArch extends Solution {
      */
     private StandardFormArch(Solution solution) {
         super(solution);
+    }
+
+    public Set<MonolithVariable> getExistingSatellites(){
+        return this.existingSatellites;
     }
 
     @Override
