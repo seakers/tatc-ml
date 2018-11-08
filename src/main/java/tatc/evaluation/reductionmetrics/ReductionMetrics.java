@@ -45,12 +45,8 @@ import seakers.orekit.analysis.vectors.VectorAnalysis;
 import seakers.orekit.coverage.access.TimeIntervalArray;
 import seakers.orekit.coverage.analysis.AnalysisMetric;
 import seakers.orekit.coverage.analysis.GroundEventAnalyzer;
-import seakers.orekit.event.EventAnalysis;
-import seakers.orekit.event.EventAnalysisEnum;
-import seakers.orekit.event.EventAnalysisFactory;
-import seakers.orekit.event.FieldOfViewEventAnalysis;
-import seakers.orekit.event.GndStationEventAnalysis;
-import seakers.orekit.event.GroundEventAnalysis;
+import seakers.orekit.coverage.analysis.LatencyGroundEventAnalyzer;
+import seakers.orekit.event.*;
 import seakers.orekit.object.CommunicationBand;
 import seakers.orekit.object.Constellation;
 import seakers.orekit.object.CoverageDefinition;
@@ -205,15 +201,18 @@ public class ReductionMetrics extends AbstractModule {
         cdef.assignConstellation(constel);
         cdefs.add(cdef);
 
+        ArrayList<EventAnalysis> eventAnalyses = new ArrayList<>();
         EventAnalysisFactory eaf = new EventAnalysisFactory(startDate, endDate,
                 inertialFrame, propatagorFactory);
-        ArrayList<EventAnalysis> eventAnalyses = new ArrayList<>();
         Properties props = new Properties();
         props.setProperty("fov.saveAccess", "true");
         FieldOfViewEventAnalysis fovAnalysis = (FieldOfViewEventAnalysis) eaf.createGroundPointAnalysis(EventAnalysisEnum.FOV, cdefs, props);
         eventAnalyses.add(fovAnalysis);
         GndStationEventAnalysis gndStationAnalysis = (GndStationEventAnalysis) eaf.createGroundStationAnalysis(EventAnalysisEnum.ACCESS, stationAssignment, properties);
         eventAnalyses.add(gndStationAnalysis);
+//        FieldOfViewAndGndStationEventAnalysis fovAndGndStationAnalysis=new FieldOfViewAndGndStationEventAnalysis(startDate, endDate,
+//                inertialFrame, cdefs, stationAssignment,propatagorFactory, true, false);
+//        eventAnalyses.add(fovAndGndStationAnalysis);
         
         ArrayList<Analysis<?>> analyses = new ArrayList<>();
         HashMap<Satellite,Analysis> anaToSat = new HashMap<>();
@@ -470,6 +469,8 @@ public class ReductionMetrics extends AbstractModule {
         //save all outputs
         GroundEventAnalyzer fovGea = new GroundEventAnalyzer(fovAnalysis.getEvents(cdef));
         GroundEventAnalyzer gndGea = new GroundEventAnalyzer(gndStationAnalysis.getEvents());
+        LatencyGroundEventAnalyzer latGea = new LatencyGroundEventAnalyzer(fovAnalysis.getAllAccesses().get(cdef),
+                gndStationAnalysis.getAllAccesses(),false);
         LocalMetricsImaging lmi = new LocalMetricsImaging(fovGea);
 
         //compute metrics
@@ -490,7 +491,7 @@ public class ReductionMetrics extends AbstractModule {
         }
 
         lmi.save(getOutputFile(), "lcl");
-        GlobalMetrics gm = new GlobalMetrics(fovGea, gndGea, TCmin, TCmax, TCavg);
+        GlobalMetrics gm = new GlobalMetrics(fovGea, gndGea, latGea, TCmin, TCmax, TCavg);
 
         gm.save(getOutputFile(), "gbl");
 

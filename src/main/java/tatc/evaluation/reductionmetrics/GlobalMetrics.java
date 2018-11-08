@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Properties;
 import seakers.orekit.coverage.analysis.AnalysisMetric;
 import seakers.orekit.coverage.analysis.GroundEventAnalyzer;
+import seakers.orekit.coverage.analysis.LatencyGroundEventAnalyzer;
 
 /**
  * Global Metrics saved for imaging missions architectures
@@ -30,6 +31,11 @@ public class GlobalMetrics extends AbstractRMOutput {
      * Analyzer for the ground stations
      */
     private final GroundEventAnalyzer gndAnalyzer;
+
+    /**
+     * Analyzer for the latency metrics
+     */
+    private final LatencyGroundEventAnalyzer latAnalyzer;
 
     /**
      * time to coverage metrics
@@ -51,10 +57,12 @@ public class GlobalMetrics extends AbstractRMOutput {
      */
     private boolean done;
 
-    public GlobalMetrics(GroundEventAnalyzer fovAnalyzer, GroundEventAnalyzer gndAnalyzer, double TCmin, double TCmax, double TCavg) {
+    public GlobalMetrics(GroundEventAnalyzer fovAnalyzer, GroundEventAnalyzer gndAnalyzer, LatencyGroundEventAnalyzer latAnalyzer,
+                         double TCmin, double TCmax, double TCavg) {
         super(groupsInit(), metaDataInit(), summaryInit(), metricsInit(), unitsInit());
         this.fovAnalyzer = fovAnalyzer;
         this.gndAnalyzer = gndAnalyzer;
+        this.latAnalyzer = latAnalyzer;
         this.TCmin = TCmin;
         this.TCmax = TCmax;
         this.TCavg = TCavg;
@@ -155,7 +163,7 @@ public class GlobalMetrics extends AbstractRMOutput {
     @Override
     protected String nextEntry() {
         if (!done) {
-            String[] entry = new String[30];
+            String[] entry = new String[32];
             Properties prop = new Properties();
             //Time
             entry[0] = "0";
@@ -173,15 +181,15 @@ public class GlobalMetrics extends AbstractRMOutput {
             entry[9] = String.valueOf(fovAnalyzer.getStatistics(AnalysisMetric.DURATION, false, prop).getMin());
             entry[10] = String.valueOf(fovAnalyzer.getStatistics(AnalysisMetric.DURATION, false, prop).getMax());
             //Coverage
-            entry[11] = "";
+            entry[11] = "0";
             //NumOfPOIPasses
             entry[12] = String.valueOf(fovAnalyzer.getStatistics(AnalysisMetric.OCCURRENCES, true, prop).getMean());
             entry[13] = String.valueOf(fovAnalyzer.getStatistics(AnalysisMetric.OCCURRENCES, true, prop).getMin());
             entry[14] = String.valueOf(fovAnalyzer.getStatistics(AnalysisMetric.OCCURRENCES, true, prop).getMax());
             //Data Latency
-            entry[15] = "";
-            entry[16] = "";
-            entry[17] = "";
+            entry[15] = String.valueOf(latAnalyzer.getStatistics().getMean());
+            entry[16] = String.valueOf(latAnalyzer.getStatistics().getMin());
+            entry[17] = String.valueOf(latAnalyzer.getStatistics().getMax());
             //NumGSPasses
             entry[18] = String.valueOf(gndAnalyzer.getStatistics(AnalysisMetric.OCCURRENCES, true, prop).getSum()
                     / (gndAnalyzer.getEndDate().durationFrom(gndAnalyzer.getStartDate()) / 86400));
@@ -193,15 +201,17 @@ public class GlobalMetrics extends AbstractRMOutput {
             entry[21] = String.valueOf(gndAnalyzer.getStatistics(AnalysisMetric.DURATION, true, prop).getMin());
             entry[22] = String.valueOf(gndAnalyzer.getStatistics(AnalysisMetric.DURATION, true, prop).getMax());
             //Cross swath
-            entry[23] = "";
-            entry[24] = "";
-            entry[25] = "";
+            entry[23] = "0";
+            entry[24] = "0";
+            entry[25] = "0";
             //along swath
-            entry[26] = "";
-            entry[27] = "";
-            entry[28] = "";
+            entry[26] = "0";
+            entry[27] = "0";
+            entry[28] = "0";
             //spatial resolution
-            entry[29] = "";
+            entry[29] = "0";
+            entry[30] = "0";
+            entry[31] = "0";
 
             done = true;
             return String.join(",", entry);

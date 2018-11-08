@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
-import knowledge.operator.EOSSOperator;
+import java.util.regex.Pattern;
 import org.moeaframework.core.Variation;
 import org.moeaframework.core.operator.CompoundVariation;
 import seakers.aos.operatorselectors.replacement.OperatorCreator;
@@ -31,34 +31,6 @@ public class TATCOperatorCreator implements OperatorCreator {
 
     public TATCOperatorCreator() {
         this.operatorSet = new ArrayList<>();
-    }
-
-    @Override
-    public Variation createOperator() {
-        Collections.shuffle(operatorSet);
-        return operatorSet.get(0);
-    }
-
-    /**
-     * Returns a new set of operators randomly selected from those available to
-     * create
-     *
-     * @param nOperators
-     * @return
-     */
-    @Override
-    public Collection<Variation> createOperator(int nOperators) {
-        if (nOperators > operatorSet.size()) {
-            throw new IllegalArgumentException(String.format("Cannot create "
-                    + "more operators than are available. Tried to create %d "
-                    + "operators but only %d available", nOperators, operatorSet.size()));
-        }
-        Collections.shuffle(operatorSet);
-        ArrayList<Variation> out = new ArrayList<>(nOperators);
-        for (int i = 0; i < nOperators; i++) {
-            out.add(operatorSet.get(i));
-        }
-        return out;
     }
 
     /**
@@ -79,36 +51,47 @@ public class TATCOperatorCreator implements OperatorCreator {
         ArrayList<String> features = new ArrayList();
 
         try (BufferedReader br = new BufferedReader(new FileReader(featureFile))) {
+            String firstLine = br.readLine(); //skip the header
             String line;
+
             while ((line = br.readLine()) != null) {
-                features.add(line);
+                String[] str = line.split(",");
+                String compositeFeatureString = str[1];
+                features.add(compositeFeatureString);
             }
         } catch (FileNotFoundException ex) {
             Logger.getLogger(TATCOperatorCreator.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Logger.getLogger(TATCOperatorCreator.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(File.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return features;
     }
-    
+
     public Variation featureToOperator(String featureString) {
         CompoundVariation operator = new CompoundVariation();
-        Matcher m = atomicFeature.matcher(featureString);
-        String operatorName = "";
-        while (m.find()) {
-            //i=1 is the first matched group as explained in Matcher Javadoc
-            for (int i = 1; i <= m.groupCount(); i++) {
-                String feature = m.group(i);
-                String[] params = feature.substring(1, feature.length() - 1).split(delimiter);
-                //assumes that first 3 arguments are not the instruments and the rest are instruments
-                String[] insts = new String[params.length - 3];
-                System.arraycopy(params, 3, insts, 0, insts.length);
-                EOSSOperator op = new EOSSOperator(params[0], params[1], params[2], insts);
-                operator.appendOperator(op);
-                operatorName += op.toString() + " + ";
+        String operatorName = featureString;
+
+        String[] atomicFeature = featureString.split("&");
+
+        for (int i = 0; i < atomicFeature.length; i++) {
+
+            boolean negate = atomicFeature[i].contains("!="); //flag to see if this feature is a negation of a feature
+
+            Matcher m = Pattern.compile("(?!=\\d\\.\\d\\.)([\\d.]+)").matcher(atomicFeature[i]);
+            double[] matcherValues = new double[2]; //first value is decision, second value is option
+            int countValues = 0;
+
+            while (m.find()) {
+                matcherValues[countValues] = Double.parseDouble(m.group(0));
+                countValues++;
             }
+
+            TATCOperator op = new TATCOperator(negate, (int) matcherValues[0], matcherValues[1]);
+            operator.appendOperator(op);
+            operatorName += op.toString();
         }
+
         if (operatorName.equalsIgnoreCase("")) {
             throw new IllegalArgumentException(String.format("%s does not fit feature pattern.", featureString));
         }
@@ -116,4 +99,31 @@ public class TATCOperatorCreator implements OperatorCreator {
         return operator;
     }
 
+    @Override
+    public Variation createOperator() {
+        Collections.shuffle(operatorSet);
+        return operatorSet.get(0);
+    }
+
+    /**
+     * Returns a new set of operators randomly selected from those available to
+     * create
+     *
+     * @param numOfOperators
+     * @return
+     */
+    @Override
+    public Collection<Variation> createOperator(int numOfOperators) {
+        if (numOfOperators > operatorSet.size()) {
+            throw new IllegalArgumentException(String.format("Cannot create "
+                    + "more operators than are available. Tried to create %d "
+                    + "operators but only %d available", numOfOperators, operatorSet.size()));
+        }
+        Collections.shuffle(operatorSet);
+        ArrayList<Variation> out = new ArrayList<>(numOfOperators);
+        for (int i = 0; i < numOfOperators; i++) {
+            out.add(operatorSet.get(i));
+        }
+        return out;
+    }
 }

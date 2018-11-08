@@ -14,13 +14,13 @@ import tatc.architecture.variable.MonolithVariable;
  *
  * @author Prachi
  */
-public class StandardFormArch extends Solution {
+public class StandardFormArchitecture extends Solution {
 
     private static final long serialVersionUID = -453938510114132596L;
 
     private Set<MonolithVariable> existingSatellites;
 
-    public StandardFormArch(int numberOfVariables, int numberOfObjectives, Set<MonolithVariable> existingSatellites) {
+    public StandardFormArchitecture(int numberOfVariables, int numberOfObjectives, Set<MonolithVariable> existingSatellites) {
         super(numberOfVariables, numberOfObjectives);
         this.existingSatellites=existingSatellites;
     }
@@ -29,7 +29,7 @@ public class StandardFormArch extends Solution {
      * Private constructor used for copying solution
      * @param solution 
      */
-    private StandardFormArch(Solution solution) {
+    private StandardFormArchitecture(Solution solution) {
         super(solution);
     }
 
@@ -39,7 +39,7 @@ public class StandardFormArch extends Solution {
 
     @Override
     public Solution copy() {
-        return new StandardFormArch(this);
+        return new StandardFormArchitecture(this);
     }
     
 }
