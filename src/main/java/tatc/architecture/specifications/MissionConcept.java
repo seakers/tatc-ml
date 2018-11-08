@@ -303,24 +303,28 @@ public class MissionConcept {
     public int getPropulsion() {
         return Propulsion;
     }
-    
+
     public int getSearchPreferences() {
-        
+
         int out;
-        String searchProcedure = SearchPreferences;       
-        File f;
-        //check if there is a SearchPreference file
+        String searchProcedure = SearchPreferences;
+
+        //check if there is a search preference
         switch (searchProcedure) {
-            case "FullFactorial":
+            case "FF":
                 out = 0;
                 break;
             case "GA":
                 out = 1;
                 break;
-                    
+            case "AOS":
+                out = 2;
+                break;
+            case "KDO":
+                out = 3;
+                break;
             default:
-                f = new File(System.getProperty("tatc.root"), searchProcedure);
-                throw new IllegalArgumentException(String.format("No file found at %s", f.getAbsoluteFile()));
+                throw new IllegalArgumentException(String.format("No search strategy preference found."));
         }
         return out;
     }

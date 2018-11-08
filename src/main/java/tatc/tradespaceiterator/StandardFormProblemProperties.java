@@ -2,7 +2,6 @@ package tatc.tradespaceiterator;
 
 import org.hipparchus.util.FastMath;
 import org.orekit.errors.OrekitException;
-import org.orekit.utils.Constants;
 import seakers.conmop.util.Bounds;
 import tatc.architecture.specifications.*;
 import tatc.architecture.variable.MonolithVariable;
@@ -49,7 +48,7 @@ public class StandardFormProblemProperties {
 
     public final SearchDatabase db;
 
-    public final ArrayList<Double> altitudes;
+    public final ArrayList<Double> smas;
 
     public final ArrayList<Double> inclination;
 
@@ -99,7 +98,7 @@ public class StandardFormProblemProperties {
             //          //Launch Vehicle options to be considered here
 //            this.lvs = new LaunchVehicleSelector(lvSpecs);
             //set discrete options for altitude, inclination, num sats, num planes
-            altitudes = discretizeAltitudes(tsr.getSatelliteOrbits().getSemiMajorAxisRange());
+            smas = discretizeSemiMajorAxes(tsr.getSatelliteOrbits().getSemiMajorAxisRange());
             inclination = discretizeInclinations(tsr.getSatelliteOrbits().getInclinationRangesOfInterest());
 
             //get any special orbits
@@ -155,21 +154,21 @@ public class StandardFormProblemProperties {
     }
 
     /**
-     * Discretizes a range of altitudes
+     * Discretizes a range of smas
      *
-     * @return the discrete values for altitudes
+     * @return the discrete values for smas
      */
-    private ArrayList<Double> discretizeAltitudes(Bounds<Double> bounds) {
+    private ArrayList<Double> discretizeSemiMajorAxes(Bounds<Double> bounds) {
 
         double l = bounds.getLowerBound();
         double u = bounds.getUpperBound();
 
-        ArrayList<Double> alts = new ArrayList<>();
+        ArrayList<Double> smas = new ArrayList<>();
 
         for (double count = l; count <= u; count = count + 50000) {
-            alts.add(count);
+            smas.add(count);
         }
-        return alts;
+        return smas;
     }
 
     /**

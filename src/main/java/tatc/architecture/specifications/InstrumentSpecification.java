@@ -112,7 +112,7 @@ public class InstrumentSpecification {
      * [bits/pixel], field of view [deg] in min:max form, iFOV [deg] in min:max
      * form, measurement time [sec] in min:max form, maximum allowed downlink
      * latency [day], maximum overall data rate [GB/day], solar conditions,
-     * sunglint preference, occultation altitudes [km] in min:max form
+     * sunglint preference, occultation smas [km] in min:max form
      * @return an instance of an instrument specification
      */
     public static InstrumentSpecification create(String str) {
@@ -130,7 +130,7 @@ public class InstrumentSpecification {
      * [bits/pixel], field of view [deg] in min:max form, iFOV [deg] in min:max
      * form, measurement time [sec] in min:max form, maximum allowed downlink
      * latency [day], maximum overall data rate [GB/day], solar conditions,
-     * sunglint preference, occultation altitudes [km] in min:max form
+     * sunglint preference, occultation smas [km] in min:max form
      * @return an instance of an instrument specification
      */
     public static InstrumentSpecification create(String[] args) {

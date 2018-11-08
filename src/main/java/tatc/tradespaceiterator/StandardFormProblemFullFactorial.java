@@ -8,7 +8,9 @@ import seakers.orekit.constellations.WalkerParameters;
 import seakers.orekit.util.Orbits;
 import tatc.architecture.TATCWalker;
 import tatc.architecture.specifications.MissionConcept;
+import tatc.evaluation.costandrisk.CostRisk;
 import tatc.evaluation.costandrisk.ResultOutput;
+import tatc.evaluation.reductionmetrics.ReductionMetrics;
 import tatc.exceptions.CostRiskException;
 import tatc.exceptions.ReductionMetricsException;
 import tatc.util.JSONIO;
@@ -42,8 +44,8 @@ public class StandardFormProblemFullFactorial implements StandardFormProblemImpl
             bufferedWriter.newLine();
 
             //convert arraylists to array in order to pass into fullFactWalker
-            Double[] altArray = new Double[properties.altitudes.size()];
-            altArray = properties.altitudes.toArray(altArray);
+            Double[] smaArray = new Double[properties.smas.size()];
+            smaArray = properties.smas.toArray(smaArray);
 
             Double[] incArray = new Double[properties.inclination.size()];
             incArray = properties.inclination.toArray(incArray);
@@ -52,7 +54,7 @@ public class StandardFormProblemFullFactorial implements StandardFormProblemImpl
             numSatsArray = properties.numberOfSats.toArray(numSatsArray);
 
             ArrayList<WalkerParameters> constellationParams = new ArrayList<>();
-            constellationParams = EnumerateWalkerConstellations.fullFactWalker(ArrayUtils.toPrimitive(altArray),
+            constellationParams = EnumerateWalkerConstellations.fullFactWalker(ArrayUtils.toPrimitive(smaArray),
                     ArrayUtils.toPrimitive(incArray),
                     ArrayUtils.toPrimitive(numSatsArray));
 
@@ -68,7 +70,6 @@ public class StandardFormProblemFullFactorial implements StandardFormProblemImpl
 
                 if (params.getI() == -1) {
                     incl = Orbits.incSSO(params.getA()-Constants.WGS84_EARTH_EQUATORIAL_RADIUS);
-                    //incl = this.getSSOInclination(params.getA());
                 } else {
                     incl = params.getI();
                 }
@@ -83,10 +84,10 @@ public class StandardFormProblemFullFactorial implements StandardFormProblemImpl
                     archEval.costAndRisk(arch, newConcept);
                     properties.evalCounter++;
                 } catch (ReductionMetricsException rmEx) {
-                    Logger.getLogger(StandardFormProblemFullFact.class.getName()).log(Level.SEVERE, null, rmEx);
+                    Logger.getLogger(ReductionMetrics.class.getName()).log(Level.SEVERE, null, rmEx);
                     throw new IllegalStateException("Evaluation of solution in R&M failed.", rmEx);
                 } catch (CostRiskException crEx) {
-                    Logger.getLogger(StandardFormProblemFullFact.class.getName()).log(Level.SEVERE, null, crEx);
+                    Logger.getLogger(CostRisk.class.getName()).log(Level.SEVERE, null, crEx);
                     throw new IllegalStateException("Evaluation of solution in C&R failed.", crEx);
                 }
                 //set cost and risk metrics

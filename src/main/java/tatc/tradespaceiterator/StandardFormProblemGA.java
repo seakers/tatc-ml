@@ -53,13 +53,13 @@ public abstract class StandardFormProblemGA extends AbstractProblem implements S
         }
 
         //read in values
-        double alt = properties.altitudes.get(((IntegerVariable) soln.getVariable(0)).getValue());
+        double sma = properties.smas.get(((IntegerVariable) soln.getVariable(0)).getValue());
         double incl = properties.inclination.get(((IntegerVariable) soln.getVariable(1)).getValue());
 
         //if there is an SSO, calculate it using the alt chosen
         //talk with Prachi here
         if (incl == -1) {
-            incl = Orbits.incSSO(alt-Constants.WGS84_EARTH_EQUATORIAL_RADIUS);
+            incl = Orbits.incSSO(sma-Constants.WGS84_EARTH_EQUATORIAL_RADIUS);
             //incl = this.getSSOInclination(alt);
         }
 
@@ -132,7 +132,7 @@ public abstract class StandardFormProblemGA extends AbstractProblem implements S
             throw new IllegalStateException("Error in number of phases q = -1");
         }
 
-        TATCWalker arch = new TATCWalker(alt, incl, numSats, p, q);
+        TATCWalker arch = new TATCWalker(sma, incl, numSats, p, q);
 
         //start date and end date/coverage
         MissionConcept newConcept = properties.tsr.getMissionConcept().copy();
@@ -167,7 +167,7 @@ public abstract class StandardFormProblemGA extends AbstractProblem implements S
     @Override
     public final Solution newSolution() {
         Solution sol = new StandardFormArchitecture(getNumberOfVariables(), getNumberOfObjectives(), properties.existingSatellites);
-        sol.setVariable(0, new IntegerVariable(0, 0, properties.altitudes.size() - 1));
+        sol.setVariable(0, new IntegerVariable(0, 0, properties.smas.size() - 1));
         sol.setVariable(1, new IntegerVariable(0, 0, properties.inclination.size() - 1));
         sol.setVariable(2, new IntegerVariable(0, 0, properties.numberOfSats.size() - 1));
         sol.setVariable(3, new RealVariable(0, 1)); //planes
