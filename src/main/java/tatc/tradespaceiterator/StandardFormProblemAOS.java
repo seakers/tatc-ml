@@ -27,15 +27,6 @@ public class StandardFormProblemAOS extends StandardFormProblemGA {
 
     public void start(){
         long startTime = System.nanoTime();
-        int maxNFE = 100;
-        int populationSize = 80;
-        Initialization initialization = new RandomInitialization(this,
-                populationSize);
-        Population population = new Population();
-        DominanceComparator comparator = new ParetoDominanceComparator();
-        EpsilonBoxDominanceArchive archive = new EpsilonBoxDominanceArchive(new double[]{60, 10});
-        final TournamentSelection selection = new TournamentSelection(2, comparator);
-
 //        Constellation c = JSONIO.readJSON(new File("/Users/Prachi/Downloads/CostRisk_CYGNSS.json"), Constellation.class);
 
         //set up variations

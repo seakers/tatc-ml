@@ -1,6 +1,13 @@
 package tatc.tradespaceiterator;
 
+import org.moeaframework.core.EpsilonBoxDominanceArchive;
+import org.moeaframework.core.Initialization;
+import org.moeaframework.core.Population;
 import org.moeaframework.core.Solution;
+import org.moeaframework.core.comparator.DominanceComparator;
+import org.moeaframework.core.comparator.ParetoDominanceComparator;
+import org.moeaframework.core.operator.RandomInitialization;
+import org.moeaframework.core.operator.TournamentSelection;
 import org.moeaframework.core.variable.RealVariable;
 import org.moeaframework.problem.AbstractProblem;
 import org.orekit.utils.Constants;
@@ -26,11 +33,25 @@ import java.util.logging.Logger;
 public abstract class StandardFormProblemGA extends AbstractProblem implements StandardFormProblemImplementation {
     StandardFormProblemProperties properties;
     ArchitectureEvaluator archEval;
+    int maxNFE;
+    int populationSize;
+    Initialization initialization;
+    Population population;
+    DominanceComparator comparator;
+    EpsilonBoxDominanceArchive archive;
+    TournamentSelection selection;
 
     public StandardFormProblemGA(StandardFormProblemProperties properties){
         super(5, 2);
+        this.maxNFE=100;
         this.properties=properties;
         this.archEval=new ArchitectureEvaluator(properties);
+        this.populationSize=80;
+        this.initialization=new RandomInitialization(this, populationSize);
+        this.population=new Population();
+        this.comparator=new ParetoDominanceComparator();
+        this.archive=new EpsilonBoxDominanceArchive(new double[]{60, 10});
+        this.selection=new TournamentSelection(2, comparator);
     }
 
 

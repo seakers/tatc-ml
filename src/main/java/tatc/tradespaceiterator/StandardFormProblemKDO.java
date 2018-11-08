@@ -39,23 +39,12 @@ public class StandardFormProblemKDO extends StandardFormProblemGA {
         //parameters and operators for search
         TypedProperties typProperties = new TypedProperties();
 
-        //search paramaters set here
-        int popSize = 2;
-        int maxEvals = 500;
-        typProperties.setInt("maxEvaluations", maxEvals);
-        typProperties.setInt("populationSize", popSize);
+        typProperties.setInt("maxEvaluations", maxNFE);
+        typProperties.setInt("populationSize", populationSize);
         double crossoverProbability = 1.0;
         typProperties.setDouble("crossoverProbability", crossoverProbability);
         double mutationProbability = 1. / 60.;
         typProperties.setDouble("mutationProbability", mutationProbability);
-
-        //define problem parameters
-        Initialization initialization = new RandomInitialization(this,
-                popSize);
-        Population population = new Population();
-        DominanceComparator comparator = new ParetoDominanceComparator();
-        EpsilonBoxDominanceArchive archive = new EpsilonBoxDominanceArchive(new double[]{0.0005,0.0005});
-        final TournamentSelection selection = new TournamentSelection(2, comparator);
 
         //setup for innovization
         int epochLength = 1; //for learning rate
@@ -105,7 +94,7 @@ public class StandardFormProblemKDO extends StandardFormProblemGA {
         //create AOS
         EpsilonMOEA emoea3 = new EpsilonMOEA(this, population, archive,
                 selection, null, initialization, comparator);
-        AOSVariation aosStrategy3 = new AOSVariationSI(operatorSelector3, creditAssignment3, popSize);
+        AOSVariation aosStrategy3 = new AOSVariationSI(operatorSelector3, creditAssignment3, populationSize);
         AOSMOEA aos3 = new AOSMOEA(emoea3, aosStrategy3, true);
         AbstractPopulationLabeler labeler = new PopulationLabeler();
         //ecs.submit(new KDOSearch(aos3, typProperties, labeler, ops, new File(mainPath.getParent(), "results").getAbsolutePath() + File.separator + "result", innovizeAssignment));

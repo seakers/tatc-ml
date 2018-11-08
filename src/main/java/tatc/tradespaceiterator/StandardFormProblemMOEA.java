@@ -22,18 +22,7 @@ public class StandardFormProblemMOEA extends StandardFormProblemGA {
 
     public void start(){
         long startTime = System.nanoTime();
-        int maxNFE = 100;
-        int populationSize = 80;
-        Initialization initialization = new RandomInitialization(this,
-                populationSize);
-        Population population = new Population();
-        DominanceComparator comparator = new ParetoDominanceComparator();
 
-        //read nozomi's paper to see what values to use as epsilon
-        EpsilonBoxDominanceArchive archive = new EpsilonBoxDominanceArchive(new double[]{60, 10});
-        final TournamentSelection selection = new TournamentSelection(2, comparator);
-
-        //setup the operators
         Variation crossover = new TwoPointCrossover(1);
         Variation mutation = new IntegerUM(0.1);
         CompoundVariation operators = new CompoundVariation(crossover, mutation);
