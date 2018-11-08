@@ -8,7 +8,6 @@ import tatc.architecture.variable.MonolithVariable;
 import tatc.evaluation.costandrisk.CostRiskSeak;
 import tatc.evaluation.reductionmetrics.AbsoluteDate;
 import tatc.evaluation.reductionmetrics.ReductionMetrics;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Properties;
@@ -57,7 +56,7 @@ public class StandardFormProblemProperties {
     public final ArrayList<SpecialOrbit> specialOrbits;
 
     public StandardFormProblemProperties(TradespaceSearchRequest tsr, Properties properties) {
-        //tsr contains the interval values
+
         this.tsr = tsr;
         File root = new File(System.getProperty("tatc.root"));
         File rmPath = new File(System.getProperty("tatc.rm"));
@@ -71,14 +70,21 @@ public class StandardFormProblemProperties {
                 new File(crPath, String.join(File.separator,
                         new String[]{"bin", "CostRisk_Default.json"})));
 
-//        //Cost and Risk module for integration
+        /*
+         * TODO: This is where the Cost and Risk will be integrated
+         */
+
 //        this.cr = new CostRisk(
 //                new File(crPath, String.join(File.separator,
 //                        new String[]{"bin", "CostRisk.json"})),
 //                new File(crPath, String.join(File.separator,
 //                        new String[]{"bin", "CostRisk_Default.json"})));
+
+
+        /*
+         * Initializing the database of specifications
+         */
         try {
-            //initialize the database
             this.db = SearchDatabase.getInstance();
             for (ObservatorySpecification spec : tsr.getObervatorySpecifications()) {
                 db.addObservatorySpecification(spec);
@@ -95,35 +101,42 @@ public class StandardFormProblemProperties {
                 lvSpecs.add(spec);
             }
 
-            //          //Launch Vehicle options to be considered here
+            /*
+             * TODO: Launch Vehicle selection process goes here
+             */
 //            this.lvs = new LaunchVehicleSelector(lvSpecs);
-            //set discrete options for altitude, inclination, num sats, num planes
+
+            /*
+             * Set discrete decision options and get any special orbits to add to the decisions
+             */
             smas = discretizeSemiMajorAxes(tsr.getSatelliteOrbits().getSemiMajorAxisRange());
             inclination = discretizeInclinations(tsr.getSatelliteOrbits().getInclinationRangesOfInterest());
-
-            //get any special orbits
             specialOrbits = tsr.getSatelliteOrbits().getSpecialOrbits();
-
-            //if there are special orbits, add SSO, ISS and criticcally inclined orbits
             if (this.specialOrbits != null) {
                 for (int i = 0; i < specialOrbits.size(); i++) {
                     inclination.add(this.getSpecialOrbitInclinations(specialOrbits.get(i)));
                 }
             }
-
             numberOfSats = discretizeSatellite(tsr.getSatelliteOrbits().getNumberOfNewSatellites());
 
-            //existing satellites must be created after the db is initilizaed with the observatories and instruments
-            //more observatories and instruments will be added to the database but exclusively for the existing satellites
+            /*
+             * Existing satellites must be created after the db is initialized with the observatories and instruments.
+             * More observatories and instruments will be added to the database but exclusively for the existing satellites.
+             */
             AbsoluteDate startDate = AbsoluteDate.cast(
                     tsr.getMissionConcept().getPerformancePeriod()[0]);
             this.existingSatellites = tsr.getSatelliteOrbits().
                     getExistingSatellites(startDate);
-            //propagate and save the access times of the existing satellitess
+
+            /*
+             * Propagate and save the access times of the existing satellitess
+             */
             Logger.getGlobal().finer("Propagating and saving accesses for existing satellites...");
             properties.setProperty("fov.saveToDB", "true");
 
-            //don't save the access of the new satellites entering the architecture
+            /*
+             * Don't save the access of the new satellites entering the architecture
+             */
             properties.setProperty("fov.saveToDB", "false");
 
             evalCounter = 0;
@@ -134,7 +147,7 @@ public class StandardFormProblemProperties {
     }
 
     /**
-     * gets inclinations for special orbits
+     * This method gets inclinations for special orbits
      */
     private double getSpecialOrbitInclinations(SpecialOrbit special) {
 

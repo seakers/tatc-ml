@@ -324,7 +324,7 @@ public class MissionConcept {
                 out = 3;
                 break;
             default:
-                throw new IllegalArgumentException(String.format("No search strategy preference found."));
+                throw new IllegalArgumentException("No search strategy preference found.");
         }
         return out;
     }

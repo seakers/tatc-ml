@@ -7,7 +7,7 @@ package tatc;
 
 /**
  * A pre-Phase A constellation mission analysis tool
- * @author Prachichi
+ * @author Prachi
  */
 
 import java.io.File;
@@ -63,11 +63,14 @@ public class TATC {
                 new File(mainPath, "TradespaceSearchRequest.json"),
                 TradespaceSearchRequest.class);
 
-        //adding options for enumerating trade space
-        // 0 - Full Factorial
-        // 1 - MOEA without AOS
-        // 2 - MOEA with offline AOS
-        // 3 - MOEA with online AOS
+        /*
+         * This if-else block calls appropriate evaluation functions.
+         * Modes for enumerating trade space
+         * 0 - FF (Full Factorial)
+         * 1 - GA (MOEA without AOS)
+         * 2 - AOS (MOEA with Adaptive Operator Select)
+         * 3 - KDO (MOEA with online Adaptive Operator Select/Knowledge Dependent Operator)
+         */
         long startTime = System.nanoTime();
 
         if (tsr.getMissionConcept().getSearchPreferences() == 0) {
