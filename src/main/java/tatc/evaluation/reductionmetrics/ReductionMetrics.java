@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.bodies.BodyShape;
 import org.orekit.bodies.GeodeticPoint;
@@ -68,6 +70,7 @@ import tatc.architecture.specifications.InstrumentSpecification;
 import tatc.architecture.specifications.MonoSpecification;
 import tatc.tradespaceiterator.TradespaceSearchRequest;
 import tatc.util.JSONIO;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -75,6 +78,7 @@ import java.util.Collections;
 
 /**
  * The reduction and metrics module
+ *
  * @author Prachi
  */
 
@@ -93,32 +97,35 @@ public class ReductionMetrics extends AbstractModule {
      */
     private int evalCounter;
 
-      /**
+    /**
      * eval counter for the number of Ground Station parameters
      */
     private int gndStnCounter;
 
-      /**
+    /**
      * eval counter for the number of Payload parameters
      */
     private int payloadCounter;
 
     private JsonArray monosJson;
 
+    private int userWantsDirectories;
+
     public ReductionMetrics(File inputFile, File outputFile, TradespaceSearchRequest tsr, Properties properties) {
         super(inputFile, outputFile);
         this.properties = properties;
         this.tsr = tsr;
+        this.userWantsDirectories = tsr.getMissionConcept().getUserDiectoryPreference();
         OrekitConfig.init(Integer.valueOf(System.getProperty("tatc.numThreads", "1")));
     }
-    
-    private void updateJSON(){
+
+    private void updateJSON() {
         this.monosJson.add("Orb" + Integer.toString(10000 + this.getEvalCounter()).substring(1) + "_" +
                 "Pay" + Integer.toString(10000 + this.getPayloadCounter()).substring(1) + "_" +
-                        "GS" + Integer.toString(10000 + this.getGndStnCounter()).substring(1));
+                "GS" + Integer.toString(10000 + this.getGndStnCounter()).substring(1));
     }
-    
-    public JsonArray getJSON(){
+
+    public JsonArray getJSON() {
         return this.monosJson;
     }
 
@@ -138,13 +145,13 @@ public class ReductionMetrics extends AbstractModule {
         AbsoluteDate endDate = dsmSpec.getMissionConcept().getPerformancePeriod()[1];
 
         this.monosJson = new JsonArray();
- 
+
         //coverage region
         HashSet<CoverageDefinition> cdefs = new HashSet();
         CoverageDefinition cdef = new CoverageDefinition("Coverage Definition",
                 dsmSpec.getMissionConcept().getPOI(earthShape));
 
-        //include all satellites in the simulation. 
+        //include all satellites in the simulation.
         //Any pre-propagated satellites in the coverage database will be uploaded and not re-run
         HashSet<Satellite> satellites = new HashSet<>();
 
@@ -157,7 +164,7 @@ public class ReductionMetrics extends AbstractModule {
 
             //load ground stations
             Set<GndStation> groundStations = loadGroundStations(
-                    mono.getMissionConcept().getGroundStationSpecifications(),earthShape);
+                    mono.getMissionConcept().getGroundStationSpecifications(), earthShape);
 
             Orbit orbit = new KeplerianElements(tatc.evaluation.reductionmetrics.AbsoluteDate.cast(startDate),
                     mono.getSatelliteOrbit());
@@ -196,7 +203,7 @@ public class ReductionMetrics extends AbstractModule {
 
             i++;
         }
-        
+
         Constellation constel = new Constellation("Constellation 0", satellites);
         cdef.assignConstellation(constel);
         cdefs.add(cdef);
@@ -213,10 +220,10 @@ public class ReductionMetrics extends AbstractModule {
 //        FieldOfViewAndGndStationEventAnalysis fovAndGndStationAnalysis=new FieldOfViewAndGndStationEventAnalysis(startDate, endDate,
 //                inertialFrame, cdefs, stationAssignment,propatagorFactory, true, false);
 //        eventAnalyses.add(fovAndGndStationAnalysis);
-        
+
         ArrayList<Analysis<?>> analyses = new ArrayList<>();
-        HashMap<Satellite,Analysis> anaToSat = new HashMap<>();
-        for (final Satellite sat : constel.getSatellites()){
+        HashMap<Satellite, Analysis> anaToSat = new HashMap<>();
+        for (final Satellite sat : constel.getSatellites()) {
             Collection<AbstractSpacecraftAnalysis<?>> abstractAnalysis = new ArrayList<>();
             abstractAnalysis.add(new OrbitalElementsAnalysis(startDate, endDate, analysisTimeStep, sat, PositionAngle.MEAN, propatagorFactory));
             abstractAnalysis.add(new VectorAnalysis(startDate, endDate, analysisTimeStep, sat, propatagorFactory, inertialFrame) {
@@ -224,6 +231,7 @@ public class ReductionMetrics extends AbstractModule {
                 public Vector3D getVector(SpacecraftState currentState, Frame frame) throws OrekitException {
                     return currentState.getPVCoordinates(frame).getPosition();
                 }
+
                 @Override
                 public String getName() {
                     return String.format("position_%s", sat.getName());
@@ -232,7 +240,7 @@ public class ReductionMetrics extends AbstractModule {
             analyses.add(new CompoundSpacecraftAnalysis(startDate, endDate, analysisTimeStep, sat, propatagorFactory, abstractAnalysis));
             anaToSat.put(sat, analyses.get(analyses.size() - 1));
         }
-        
+
         Scenario scen = new Scenario("", startDate, endDate,
                 timeScale, inertialFrame, propatagorFactory,
                 cdefs, eventAnalyses, analyses, properties);
@@ -242,258 +250,267 @@ public class ReductionMetrics extends AbstractModule {
         } catch (Exception ex) {
             throw new IllegalStateException("Evaluation failed.", ex);
         }
-        
-        Map<Satellite, Map<TopocentricFrame, TimeIntervalArray>> satAccess = new HashMap<>();
-        
-        for (Satellite sat : satellites){
-            satAccess.put(sat, fovAnalysis.getSatelliteAccesses(cdef, sat));
-        }
 
+        if (userWantsDirectories == 1) {
 
-        //get TCavg, TCmin, TCmax
-        //TCmin
-        ArrayList<Double> firstRiseTimeValues = new ArrayList<>();
-        //TCmax
-        ArrayList<Double> lastRiseTimeValues = new ArrayList<>();
-        // For every orbital and vector analysis in analysis array
+            Map<Satellite, Map<TopocentricFrame, TimeIntervalArray>> satAccess = new HashMap<>();
 
-        for (Satellite sat : satellites){
-            setGndStnCounter(0);
-            setPayloadCounter(0);
-            Analysis analysis = anaToSat.get(sat);
-            Collection<Record> orbitAnalysis = new ArrayList<>();
-            Collection<Record> vectorAnalysis = new ArrayList<>();
-
-            for (Analysis anal : ((CompoundSpacecraftAnalysis) analysis).getAnalyses()) {
-                if (anal instanceof OrbitalElementsAnalysis) {
-                    orbitAnalysis.addAll(anal.getHistory());
-
-                } else {
-                    vectorAnalysis.addAll(anal.getHistory());
-                }
+            for (Satellite sat : satellites) {
+                satAccess.put(sat, fovAnalysis.getSatelliteAccesses(cdef, sat));
             }
 
-            Map<TopocentricFrame, TimeIntervalArray> satAccesses = satAccess.get(sat);
 
-            CoarsePropObservatories coarse = new CoarsePropObservatories(orbitAnalysis, vectorAnalysis);
-            File file = new File(System.getProperty("tatc.monos"), "Orb" + Integer.toString(100000 + getEvalCounter()).substring(1));
-            file.mkdir();
-            coarse.save(file.getAbsoluteFile(), "obs");
+            //get TCavg, TCmin, TCmax
+            //TCmin
+            ArrayList<Double> firstRiseTimeValues = new ArrayList<>();
+            //TCmax
+            ArrayList<Double> lastRiseTimeValues = new ArrayList<>();
+            // For every orbital and vector analysis in analysis array
 
-            //output the observatory specs in json file
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            JsonObject jsonObservatory = new JsonObject();
+            for (Satellite sat : satellites) {
+                setGndStnCounter(0);
+                setPayloadCounter(0);
+                Analysis analysis = anaToSat.get(sat);
+                Collection<Record> orbitAnalysis = new ArrayList<>();
+                Collection<Record> vectorAnalysis = new ArrayList<>();
 
-            jsonObservatory.addProperty("commBandTypes", monoSpecs.get(sat).getObservatorySpecification().getCommBandTypes());
-            jsonObservatory.addProperty("dragCoeff", "");
-            jsonObservatory.addProperty("startDate", monoSpecs.get(sat).getMissionConcept().getPerformancePeriod()[0].toString());
-            jsonObservatory.addProperty("endDate", monoSpecs.get(sat).getMissionConcept().getPerformancePeriod()[1].toString());
-            jsonObservatory.addProperty("startEcc", monoSpecs.get(sat).getSatelliteOrbit().getStartEcc());
-            jsonObservatory.addProperty("startIncl", Math.toDegrees(monoSpecs.get(sat).getSatelliteOrbit().getStartIncl()));
-            jsonObservatory.addProperty("startPer", monoSpecs.get(sat).getSatelliteOrbit().getStartPer());
-            jsonObservatory.addProperty("startRAAN", monoSpecs.get(sat).getSatelliteOrbit().getStartRAAN());
-            jsonObservatory.addProperty("startSMA", monoSpecs.get(sat).getSatelliteOrbit().getStartSMA());
-            jsonObservatory.addProperty("startTrueA", monoSpecs.get(sat).getSatelliteOrbit().getStartTrueA());
-            jsonObservatory.addProperty("volume", "");
+                for (Analysis anal : ((CompoundSpacecraftAnalysis) analysis).getAnalyses()) {
+                    if (anal instanceof OrbitalElementsAnalysis) {
+                        orbitAnalysis.addAll(anal.getHistory());
 
-            String obsSpecsStr = gson.toJson(jsonObservatory);
-
-            try (BufferedWriter bw = new BufferedWriter(new FileWriter(new File(file, "Observatory.json")))) {
-                bw.append(obsSpecsStr);
-                bw.flush();
-            } catch (IOException ex) {
-                Logger.getLogger(JSONIO.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            //finish writing the observatory specs in json file
-
-            GroundEventAnalyzer gndStn = new GroundEventAnalyzer(gndStationAnalysis.getEvents(sat));
-
-            Set<GndStation> gndStation = stationAssignment.get(sat);
-
-            //get all the points(keys) for the map
-            Collection<TopocentricFrame> keys = new ArrayList<>();
-            Map<TopocentricFrame, TimeIntervalArray> gndAccesses = new HashMap<>();
-            for (GndStation gnd : gndStation) {
-                TopocentricFrame point = gnd.getBaseFrame();
-                keys.add(point);
-                gndAccesses = gndStn.getEvents(keys);
-            }
-            
-            this.updateJSON();
-            for (GndStation gnd : gndStation) {
-                File gndStationFile = new File(file, "GS" + Integer.toString(10000 + getGndStnCounter()).substring(1));
-                gndStationFile.mkdir();
-                TopocentricFrame gndPoint=gnd.getBaseFrame();
-
-                GndStationAccessMetrics gndStnMetric = new GndStationAccessMetrics(gndAccesses.get(gndPoint));
-
-                double lat = Math.toDegrees(gndPoint.getPoint().getLatitude());
-                double lon = Math.toDegrees(gndPoint.getPoint().getLongitude());
-
-                char northOrSouth;
-                char eastOrWest;
-
-                if (lat >= 0) {
-                    northOrSouth = 'N';
-                } else {
-                    northOrSouth = 'S';
+                    } else {
+                        vectorAnalysis.addAll(anal.getHistory());
+                    }
                 }
 
-                if (lon >= 0) {
-                    eastOrWest = 'E';
-                } else {
-                    eastOrWest = 'W';
-                }
+                Map<TopocentricFrame, TimeIntervalArray> satAccesses = satAccess.get(sat);
 
-                //get upto 3 significant figures after decimal point
-                DecimalFormat df = new DecimalFormat("#.###");
-                String x = df.format(lat);
-                String y = df.format(lon);
+                CoarsePropObservatories coarse = new CoarsePropObservatories(orbitAnalysis, vectorAnalysis);
+                File file = new File(System.getProperty("tatc.monos"), "Orb" + Integer.toString(100000 + getEvalCounter()).substring(1));
+                file.mkdir();
+                coarse.save(file.getAbsoluteFile(), "obs");
 
-                //get absolute values of lat and lon
-                lat = Math.abs(Double.valueOf(x));
-                lon = Math.abs(Double.valueOf(y));
+                //output the observatory specs in json file
+                Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                JsonObject jsonObservatory = new JsonObject();
 
-                gndStnMetric.save(gndStationFile, "Stn" + Integer.toString(10000 + getGndStnCounter()).substring(1) + "_"
-                        + "lat" + northOrSouth + lat + "_"
-                        + "lon" + eastOrWest + lon);
+                jsonObservatory.addProperty("commBandTypes", monoSpecs.get(sat).getObservatorySpecification().getCommBandTypes());
+                jsonObservatory.addProperty("dragCoeff", "");
+                jsonObservatory.addProperty("startDate", monoSpecs.get(sat).getMissionConcept().getPerformancePeriod()[0].toString());
+                jsonObservatory.addProperty("endDate", monoSpecs.get(sat).getMissionConcept().getPerformancePeriod()[1].toString());
+                jsonObservatory.addProperty("startEcc", monoSpecs.get(sat).getSatelliteOrbit().getStartEcc());
+                jsonObservatory.addProperty("startIncl", Math.toDegrees(monoSpecs.get(sat).getSatelliteOrbit().getStartIncl()));
+                jsonObservatory.addProperty("startPer", monoSpecs.get(sat).getSatelliteOrbit().getStartPer());
+                jsonObservatory.addProperty("startRAAN", monoSpecs.get(sat).getSatelliteOrbit().getStartRAAN());
+                jsonObservatory.addProperty("startSMA", monoSpecs.get(sat).getSatelliteOrbit().getStartSMA());
+                jsonObservatory.addProperty("startTrueA", monoSpecs.get(sat).getSatelliteOrbit().getStartTrueA());
+                jsonObservatory.addProperty("volume", "");
 
-                //write ground station specs to json file 
-                JsonObject station = new JsonObject();
-                
-                String commBand = "";
-                for (CommunicationBand band : gnd.getReceiver().getBands()){
-                    commBand = commBand + band.name();
-                }
-                station.addProperty("commBandTypes", commBand);
-                station.addProperty("designation", "0.0");
-                station.addProperty("lat", Math.toDegrees(gndPoint.getPoint().getLatitude()));
-                station.addProperty("lon", Math.toDegrees(gndPoint.getPoint().getLongitude()));
+                String obsSpecsStr = gson.toJson(jsonObservatory);
 
-                JsonObject jsonGroundNetwork = new JsonObject();
-                jsonGroundNetwork.addProperty("designation", "0.0");
-                jsonGroundNetwork.add("station", station);
-
-                String gndStnSpecsStr = gson.toJson(jsonGroundNetwork);
-
-                try (BufferedWriter bw = new BufferedWriter(new FileWriter(new File(gndStationFile, "GroundNetwork.json")))) {
-                    bw.append(gndStnSpecsStr);
+                try (BufferedWriter bw = new BufferedWriter(new FileWriter(new File(file, "Observatory.json")))) {
+                    bw.append(obsSpecsStr);
                     bw.flush();
                 } catch (IOException ex) {
                     Logger.getLogger(JSONIO.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                //finish writing the ground station specs in json file
+                //finish writing the observatory specs in json file
 
-                setGndStnCounter(getGndStnCounter()+1);
+                GroundEventAnalyzer gndStn = new GroundEventAnalyzer(gndStationAnalysis.getEvents(sat));
+
+                Set<GndStation> gndStation = stationAssignment.get(sat);
+
+                //get all the points(keys) for the map
+                Collection<TopocentricFrame> keys = new ArrayList<>();
+                Map<TopocentricFrame, TimeIntervalArray> gndAccesses = new HashMap<>();
+                for (GndStation gnd : gndStation) {
+                    TopocentricFrame point = gnd.getBaseFrame();
+                    keys.add(point);
+                    gndAccesses = gndStn.getEvents(keys);
+                }
+
                 this.updateJSON();
+                for (GndStation gnd : gndStation) {
+                    File gndStationFile = new File(file, "GS" + Integer.toString(10000 + getGndStnCounter()).substring(1));
+                    gndStationFile.mkdir();
+                    TopocentricFrame gndPoint = gnd.getBaseFrame();
+
+                    GndStationAccessMetrics gndStnMetric = new GndStationAccessMetrics(gndAccesses.get(gndPoint));
+
+                    double lat = Math.toDegrees(gndPoint.getPoint().getLatitude());
+                    double lon = Math.toDegrees(gndPoint.getPoint().getLongitude());
+
+                    char northOrSouth;
+                    char eastOrWest;
+
+                    if (lat >= 0) {
+                        northOrSouth = 'N';
+                    } else {
+                        northOrSouth = 'S';
+                    }
+
+                    if (lon >= 0) {
+                        eastOrWest = 'E';
+                    } else {
+                        eastOrWest = 'W';
+                    }
+
+                    //get upto 3 significant figures after decimal point
+                    DecimalFormat df = new DecimalFormat("#.###");
+                    String x = df.format(lat);
+                    String y = df.format(lon);
+
+                    //get absolute values of lat and lon
+                    lat = Math.abs(Double.valueOf(x));
+                    lon = Math.abs(Double.valueOf(y));
+
+                    gndStnMetric.save(gndStationFile, "Stn" + Integer.toString(10000 + getGndStnCounter()).substring(1) + "_"
+                            + "lat" + northOrSouth + lat + "_"
+                            + "lon" + eastOrWest + lon);
+
+                    //write ground station specs to json file
+                    JsonObject station = new JsonObject();
+
+                    String commBand = "";
+                    for (CommunicationBand band : gnd.getReceiver().getBands()) {
+                        commBand = commBand + band.name();
+                    }
+                    station.addProperty("commBandTypes", commBand);
+                    station.addProperty("designation", "0.0");
+                    station.addProperty("lat", Math.toDegrees(gndPoint.getPoint().getLatitude()));
+                    station.addProperty("lon", Math.toDegrees(gndPoint.getPoint().getLongitude()));
+
+                    JsonObject jsonGroundNetwork = new JsonObject();
+                    jsonGroundNetwork.addProperty("designation", "0.0");
+                    jsonGroundNetwork.add("station", station);
+
+                    String gndStnSpecsStr = gson.toJson(jsonGroundNetwork);
+
+                    try (BufferedWriter bw = new BufferedWriter(new FileWriter(new File(gndStationFile, "GroundNetwork.json")))) {
+                        bw.append(gndStnSpecsStr);
+                        bw.flush();
+                    } catch (IOException ex) {
+                        Logger.getLogger(JSONIO.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    //finish writing the ground station specs in json file
+
+                    setGndStnCounter(getGndStnCounter() + 1);
+                    this.updateJSON();
+                }
+
+                setPayloadCounter(0);
+                File accessesFile = new File(file, "Pay00" + Integer.toString(1000 + getPayloadCounter()).substring(1));
+                accessesFile.mkdir();
+
+                //save point of interests
+                int poiCount = 0;
+
+                for (TopocentricFrame point : satAccesses.keySet()) {
+
+                    TimeIntervalArray time = satAccesses.get(point);
+
+                    if (time.getRiseSetTimes().isEmpty()) {
+                        firstRiseTimeValues.add(null);
+                        lastRiseTimeValues.add(null);
+                    } else {
+                        firstRiseTimeValues.add(time.getRiseSetTimes().get(0).getTime());
+                        lastRiseTimeValues.add(time.getRiseSetTimes().get(time.getRiseSetTimes().size() - 2).getTime());
+                    }
+
+                    POIAccessMetrics poi = new POIAccessMetrics(time);
+
+                    double lat = Math.toDegrees(point.getPoint().getLatitude());
+                    double lon = Math.toDegrees(point.getPoint().getLongitude());
+
+                    char northOrSouth;
+                    char eastOrWest;
+
+                    if (lat >= 0) {
+                        northOrSouth = 'N';
+                    } else {
+                        northOrSouth = 'S';
+                    }
+
+                    if (lon >= 0) {
+                        eastOrWest = 'E';
+                    } else {
+                        eastOrWest = 'W';
+                    }
+
+                    //get upto 3 significant figures after decimal point
+                    DecimalFormat df = new DecimalFormat("#.###");
+                    String x = df.format(lat);
+                    String y = df.format(lon);
+
+                    //get absolute values of lat and lon
+                    lat = Math.abs(Double.valueOf(x));
+                    lon = Math.abs(Double.valueOf(y));
+
+                    poi.save(accessesFile.getAbsoluteFile(), "POI" + Integer.toString(10000 + poiCount).substring(1) + "_"
+                            + "lat" + northOrSouth + lat + "_"
+                            + "lon" + eastOrWest + lon);
+
+                    InstrumentSpecification inst = monoSpecs.get(sat).getInstrumentSpecification();
+
+                    //write instrument specs to json file
+                    JsonObject angles = new JsonObject();
+                    angles.addProperty("clock", inst.getCrossFieldOfView());
+                    angles.addProperty("cone", inst.getAlongFieldOfView());
+
+                    JsonObject instrument = new JsonObject();
+                    instrument.add("fieldOfView", angles);
+
+                    String instrumentSpecsStr = gson.toJson(instrument);
+
+                    try (BufferedWriter bw = new BufferedWriter(new FileWriter(new File(accessesFile, "Instrument.json")))) {
+                        bw.append(instrumentSpecsStr);
+                        bw.flush();
+                    } catch (IOException ex) {
+                        Logger.getLogger(JSONIO.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    //finish writing instruments specs in json file
+
+                    poiCount++;
+                }
+                setEvalCounter(getEvalCounter() + 1);
             }
 
-            setPayloadCounter(0);
-            File accessesFile = new File(file, "Pay00" + Integer.toString(1000 + getPayloadCounter()).substring(1));
-            accessesFile.mkdir();
+            //save all outputs
+            GroundEventAnalyzer fovGea = new GroundEventAnalyzer(fovAnalysis.getEvents(cdef));
+            GroundEventAnalyzer gndGea = new GroundEventAnalyzer(gndStationAnalysis.getEvents());
+            LatencyGroundEventAnalyzer latGea = new LatencyGroundEventAnalyzer(fovAnalysis.getAllAccesses().get(cdef),
+                    gndStationAnalysis.getAllAccesses(), false);
+            LocalMetricsImaging lmi = new LocalMetricsImaging(fovGea);
 
-            //save point of interests
-            int poiCount = 0;
-            
-            for (TopocentricFrame point : satAccesses.keySet()) {
+            //compute metrics
+            metrics = computeMetrics(fovGea, gndGea);
 
-                TimeIntervalArray time = satAccesses.get(point);
-                
-                if (time.getRiseSetTimes().isEmpty()) {
-                    firstRiseTimeValues.add(null);
-                    lastRiseTimeValues.add(null);
-                }
-                else {
-                    firstRiseTimeValues.add(time.getRiseSetTimes().get(0).getTime());
-                    lastRiseTimeValues.add(time.getRiseSetTimes().get(time.getRiseSetTimes().size()-2).getTime());
-                }
-
-                POIAccessMetrics poi = new POIAccessMetrics(time);
-
-                double lat = Math.toDegrees(point.getPoint().getLatitude());
-                double lon = Math.toDegrees(point.getPoint().getLongitude());
-
-                char northOrSouth;
-                char eastOrWest;
-
-                if (lat >= 0) {
-                    northOrSouth = 'N';
-                } else {
-                    northOrSouth = 'S';
-                }
-
-                if (lon >= 0) {
-                    eastOrWest = 'E';
-                } else {
-                    eastOrWest = 'W';
-                }
-
-                //get upto 3 significant figures after decimal point
-                DecimalFormat df = new DecimalFormat("#.###");
-                String x = df.format(lat);
-                String y = df.format(lon);
-
-                //get absolute values of lat and lon
-                lat = Math.abs(Double.valueOf(x));
-                lon = Math.abs(Double.valueOf(y));
-
-                poi.save(accessesFile.getAbsoluteFile(), "POI" + Integer.toString(10000 + poiCount).substring(1) + "_"
-                        + "lat" + northOrSouth + lat + "_"
-                        + "lon" + eastOrWest + lon);
-
-                InstrumentSpecification inst = monoSpecs.get(sat).getInstrumentSpecification();
-                
-                //write instrument specs to json file 
-                JsonObject angles = new JsonObject();
-                angles.addProperty("clock", inst.getCrossFieldOfView());
-                angles.addProperty("cone", inst.getAlongFieldOfView());
-
-                JsonObject instrument = new JsonObject();
-                instrument.add("fieldOfView", angles);
-                
-                String instrumentSpecsStr = gson.toJson(instrument);
-
-                try (BufferedWriter bw = new BufferedWriter(new FileWriter(new File(accessesFile, "Instrument.json")))) {
-                    bw.append(instrumentSpecsStr);
-                    bw.flush();
-                } catch (IOException ex) {
-                    Logger.getLogger(JSONIO.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                //finish writing instruments specs in json file
-
-                poiCount++;
+            //get TCmin and TCmax
+            double TCmin, TCmax, TCavg;
+            if (lastRiseTimeValues.contains(null) || lastRiseTimeValues.isEmpty() ||
+                    firstRiseTimeValues.contains(null) || firstRiseTimeValues.isEmpty()) {
+                TCmin = 0;
+                TCmax = 0;
+                TCavg = 0;
+            } else {
+                TCmin = Collections.max(firstRiseTimeValues);
+                TCmax = Collections.max(lastRiseTimeValues);
+                TCavg = Collections.max(lastRiseTimeValues) / lastRiseTimeValues.size();
             }
-            setEvalCounter(getEvalCounter()+1);
+
+            lmi.save(getOutputFile(), "lcl");
+            GlobalMetrics gm = new GlobalMetrics(fovGea, gndGea, latGea, TCmin, TCmax, TCavg);
+
+            gm.save(getOutputFile(), "gbl");
+        } else {
+            //save all outputs
+            GroundEventAnalyzer fovGea = new GroundEventAnalyzer(fovAnalysis.getEvents(cdef));
+            GroundEventAnalyzer gndGea = new GroundEventAnalyzer(gndStationAnalysis.getEvents());
+            LocalMetricsImaging lmi = new LocalMetricsImaging(fovGea);
+
+            //compute metrics
+            metrics = computeMetrics(fovGea, gndGea);
         }
-
-        //save all outputs
-        GroundEventAnalyzer fovGea = new GroundEventAnalyzer(fovAnalysis.getEvents(cdef));
-        GroundEventAnalyzer gndGea = new GroundEventAnalyzer(gndStationAnalysis.getEvents());
-        LatencyGroundEventAnalyzer latGea = new LatencyGroundEventAnalyzer(fovAnalysis.getAllAccesses().get(cdef),
-                gndStationAnalysis.getAllAccesses(),false);
-        LocalMetricsImaging lmi = new LocalMetricsImaging(fovGea);
-
-        //compute metrics
-        metrics = computeMetrics(fovGea, gndGea);
-        
-        //get TCmin and TCmax
-        double TCmin, TCmax, TCavg;
-        if (lastRiseTimeValues.contains(null) || lastRiseTimeValues.isEmpty() || 
-                firstRiseTimeValues.contains(null) ||firstRiseTimeValues.isEmpty()){
-            TCmin = 0;
-            TCmax = 0;
-            TCavg = 0;
-        }
-        else {
-            TCmin = Collections.max(firstRiseTimeValues);
-            TCmax = Collections.max(lastRiseTimeValues);
-            TCavg = Collections.max(lastRiseTimeValues)/lastRiseTimeValues.size();
-        }
-
-        lmi.save(getOutputFile(), "lcl");
-        GlobalMetrics gm = new GlobalMetrics(fovGea, gndGea, latGea, TCmin, TCmax, TCavg);
-
-        gm.save(getOutputFile(), "gbl");
 
         return this;
     }
@@ -529,28 +546,28 @@ public class ReductionMetrics extends AbstractModule {
         return metrics;
     }
 
-    public int getEvalCounter(){
+    public int getEvalCounter() {
         return this.evalCounter;
     }
 
-    public int getGndStnCounter(){
+    private void setEvalCounter(int n) {
+        this.evalCounter = n;
+    }
+
+    public int getGndStnCounter() {
         return this.gndStnCounter;
     }
 
-    public int getPayloadCounter(){
+    private void setGndStnCounter(int n) {
+        this.gndStnCounter = n;
+    }
+
+    public int getPayloadCounter() {
         return this.payloadCounter;
     }
 
-    private void setEvalCounter(int n){
-        this.evalCounter=n;
-    }
-
-    private void setGndStnCounter(int n){
-        this.gndStnCounter=n;
-    }
-
-    private void setPayloadCounter(int n){
-        this.payloadCounter=n;
+    private void setPayloadCounter(int n) {
+        this.payloadCounter = n;
     }
 
     /**
@@ -558,7 +575,7 @@ public class ReductionMetrics extends AbstractModule {
      * the mission concept
      *
      * @param specs The specification of all the grounds stations to include in
-     * this mission analysis
+     *              this mission analysis
      * @return The grounds stations to include in this mission analysis
      */
     private Set<GndStation> loadGroundStations(Set<GroundStationSpecification> specs, BodyShape body) {

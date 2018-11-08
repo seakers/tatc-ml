@@ -85,11 +85,13 @@ public class MissionConcept {
     
     private final String SearchPreferences;
 
+    private final String UserDirectoryPreference;
+
     public MissionConcept(int StartEpoch, String PerformancePeriod,
             String MissionDuration, int Granularity, String AreaOfInterest,
             String ObjectsOfInterest, String GroundStationOptions,
-            String LaunchPreferences, String MissionDirector, int Propulsion, 
-            String SearchPreferences) {
+            String LaunchPreferences, String MissionDirector, int Propulsion,
+            String UserDirectoryPreference,String SearchPreferences) {
         this.StartEpoch = StartEpoch;
         this.PerformancePeriod = PerformancePeriod;
         this.MissionDuration = MissionDuration;
@@ -100,6 +102,7 @@ public class MissionConcept {
         this.LaunchPreferences = LaunchPreferences;
         this.MissionDirector = MissionDirector;
         this.Propulsion = Propulsion;
+        this.UserDirectoryPreference = UserDirectoryPreference;
         this.SearchPreferences = SearchPreferences;
     }
 
@@ -328,6 +331,15 @@ public class MissionConcept {
         }
         return out;
     }
+
+    public int getUserDiectoryPreference (){
+        if (UserDirectoryPreference.equals("false")){
+            return 0;
+        }
+        else {
+            return 1;
+        }
+    }
     
     /**
      * Creates a new instance of this mission concept
@@ -338,7 +350,7 @@ public class MissionConcept {
         return new MissionConcept(StartEpoch, PerformancePeriod,
                 MissionDuration, Granularity, AreaOfInterest, ObjectsOfInterest,
                 GroundStationOptions, LaunchPreferences, MissionDirector,
-                Propulsion, SearchPreferences);
+                Propulsion, UserDirectoryPreference,SearchPreferences);
     }
 
 }
