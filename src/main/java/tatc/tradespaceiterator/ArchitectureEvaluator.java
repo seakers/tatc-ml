@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.orekit.utils.Constants;
 import seakers.orekit.util.Units;
+import tatc.architecture.Architecture;
 import tatc.architecture.TATCWalker;
 import tatc.architecture.specifications.*;
 import tatc.architecture.variable.MonolithVariable;
@@ -32,7 +33,7 @@ public class ArchitectureEvaluator {
     /**
      * Create and process the reduction and metrics job request
      */
-    public void reductionAndMetrics(TATCWalker arch, MissionConcept concept) throws ReductionMetricsException {
+    public void reductionAndMetrics(Architecture arch, MissionConcept concept) throws ReductionMetricsException {
         //create a R&M job request in the form a JSON
         Set<MonolithVariable> monoliths = new HashSet<>();
         monoliths.addAll(properties.existingSatellites);
@@ -89,7 +90,7 @@ public class ArchitectureEvaluator {
     /**
      * Create and process the cost and risk job request
      */
-    public void costAndRisk(TATCWalker arch, MissionConcept concept) throws CostRiskException {
+    public void costAndRisk(Architecture arch, MissionConcept concept) throws CostRiskException {
         Set<MonolithVariable> monoliths = new HashSet<>();
         monoliths.addAll(properties.existingSatellites);
         monoliths.addAll(arch.getSatellites());

@@ -76,16 +76,17 @@ public class TATC {
         if (tsr.getMissionConcept().getSearchPreferences() == 0) {
             StandardFormProblem problem = new StandardFormProblem(tsr,properties, StandardFormProblem.ProblemType.FF);
             problem.run();
-        } else if (tsr.getMissionConcept().getSearchPreferences() == 12){
+            problem.shutdown();
+        } else if (tsr.getMissionConcept().getSearchPreferences() == 1){
             StandardFormProblem problem = new StandardFormProblem(tsr,properties, StandardFormProblem.ProblemType.EPS);
             problem.run();
             problem.shutdown();
-        } else if (tsr.getMissionConcept().getSearchPreferences() == 21){
+        } else if (tsr.getMissionConcept().getSearchPreferences() == 2){
             StandardFormProblem problem = new StandardFormProblem(tsr,properties, StandardFormProblem.ProblemType.AOS);
             problem.run();
             problem.shutdown();
         }
-        else if(tsr.getMissionConcept().getSearchPreferences() == 1){
+        else if(tsr.getMissionConcept().getSearchPreferences() == 3){
             StandardFormProblem problem = new StandardFormProblem(tsr,properties, StandardFormProblem.ProblemType.KDO);
             problem.run();
             problem.shutdown();

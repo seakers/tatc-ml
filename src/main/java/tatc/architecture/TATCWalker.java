@@ -14,7 +14,7 @@ import tatc.architecture.variable.MonolithVariable;
  *
  * @author Prachi
  */
-public class TATCWalker {
+public class TATCWalker implements Architecture{
 
     private final HashSet<MonolithVariable> satellites;
 

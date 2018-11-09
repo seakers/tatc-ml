@@ -25,8 +25,6 @@ import seakers.orekit.util.Units;
 import tatc.architecture.specifications.InstrumentSpecification;
 import tatc.architecture.specifications.ObservatorySpecification;
 import tatc.architecture.specifications.SatelliteOrbitSpecification;
-import tatc.evaluation.reductionmetrics.AbsoluteDate;
-
 
 public class SatelliteOrbits {
 
@@ -197,12 +195,10 @@ public class SatelliteOrbits {
      * then it is assumed that id = 0 for both observatory and instrument
      * specification.
      *
-     * @param startDate the startDate when the satellites are positioned by
-     * their orbital parameters
      * @return the existing satellite with their initial orbital parameters set
      * at the startDate
      */
-    public Set<MonolithVariable> getExistingSatellites(AbsoluteDate startDate) {
+    public Set<MonolithVariable> getExistingSatellites() {
         Set<MonolithVariable> out = new HashSet<>();
         if (!ExistingSatelliteOptions.equalsIgnoreCase("Null")) {
             File file = new File(System.getProperty("tatc.root"), ExistingSatelliteOptions);

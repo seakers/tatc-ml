@@ -104,7 +104,7 @@ public class MissionConcept {
     }
 
     public AbsoluteDate getStartEpoch() throws OrekitException {
-        AbsoluteDate zero = new AbsoluteDate(0, 1, 1, 0, 0, 0.0, TimeScalesFactory.getUTC());
+        AbsoluteDate zero = new AbsoluteDate(1970, 1, 1, 0, 0, 0.0, TimeScalesFactory.getUTC());
         return zero.shiftedBy(StartEpoch);
     }
 
