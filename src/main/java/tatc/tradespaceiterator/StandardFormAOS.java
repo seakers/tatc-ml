@@ -2,8 +2,6 @@ package tatc.tradespaceiterator;
 
 import org.moeaframework.algorithm.EpsilonMOEA;
 import org.moeaframework.core.*;
-import org.moeaframework.core.comparator.DominanceComparator;
-import org.moeaframework.core.comparator.ParetoDominanceComparator;
 import org.moeaframework.core.operator.*;
 import seakers.aos.aos.AOSMOEA;
 import seakers.aos.creditassignment.setimprovement.SetImprovementDominance;
@@ -20,8 +18,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-public class StandardFormProblemAOS extends StandardFormProblemGA {
-    public StandardFormProblemAOS(StandardFormProblemProperties properties) {
+public class StandardFormAOS extends StandardFormGA {
+    public StandardFormAOS(StandardFormProblemProperties properties) {
         super(properties);
     }
 
@@ -44,7 +42,7 @@ public class StandardFormProblemAOS extends StandardFormProblemGA {
 
         //create AOS
         AOSVariation aosStrategy = new AOSVariationSI(operatorSelector, creditAssignment, populationSize);
-        EpsilonMOEA emoea = new EpsilonMOEA(this, population, archive,
+        EpsilonMOEA emoea = new EpsilonMOEA(problem, population, archive,
                 selection, aosStrategy, initialization, comparator);
         AOSMOEA aos = new AOSMOEA(emoea, aosStrategy, true);
 

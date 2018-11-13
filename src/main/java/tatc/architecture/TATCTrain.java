@@ -27,7 +27,7 @@ public class TATCTrain implements Architecture{
     /**
      * Creates a train constellation given the semi-major axis, the date of the launch and an array of LTANs in decimal
      * hours. The satellites contained in this constellation are not assigned any instrumentation nor are any
-     * steering/attitude laws. The date of the simulation is assumed to be the date of launch at the FIRST LTAN.
+     * steering/attitude laws.
      */
     public TATCTrain(double semiMajorAxis, int dayLaunch, int monthLaunch, int yearLaunch, ArrayList<Double> LTANs, AbsoluteDate startDate) throws OrekitException{
         final double inc= Orbits.incSSO(semiMajorAxis- Constants.WGS84_EARTH_EQUATORIAL_RADIUS);
@@ -47,7 +47,7 @@ public class TATCTrain implements Architecture{
             mono.setInc(inc);
             mono.setRaan(  ( raanRef  +  ((LTANs.get(i)-LTANs.get(0)) / 24 * 2 * Math.PI) ) %  ( 2 * Math.PI ) );
             mono.setArgPer(0.0);
-            double anom = ( 2 * Math.PI - ((LTANs.get(i)-LTANs.get(0)) / Orbits.circularOrbitPeriod(semiMajorAxis) * 2 * Math.PI) ) %  ( 2 * Math.PI );
+            double anom = ( 2 * Math.PI - ((LTANs.get(i)-LTANs.get(0)) / (Orbits.circularOrbitPeriod(semiMajorAxis)/3600) * 2 * Math.PI) ) %  ( 2 * Math.PI );
             mono.setTrueAnomaly(anom);
             this.satellites.add(mono);
         }
@@ -80,7 +80,7 @@ public class TATCTrain implements Architecture{
             mono.setInc(inc);
             mono.setRaan(  ( raanRef  +  ((LTANs.get(i)-LTANs.get(0)) / 24 * 2 * Math.PI) ) %  ( 2 * Math.PI ) );
             mono.setArgPer(0.0);
-            double anom = ( 2 * Math.PI - ((LTANs.get(i)-LTANs.get(0)) / Orbits.circularOrbitPeriod(semiMajorAxis) * 2 * Math.PI) ) %  ( 2 * Math.PI );
+            double anom = ( 2 * Math.PI - ((LTANs.get(i)-LTANs.get(0)) / (Orbits.circularOrbitPeriod(semiMajorAxis)/3600) * 2 * Math.PI) ) %  ( 2 * Math.PI );
             mono.setTrueAnomaly(anom);
             this.satellites.add(mono);
         }

@@ -55,6 +55,8 @@ public class StandardFormProblemProperties {
 
     public final ArrayList<SpecialOrbit> specialOrbits;
 
+    public final ArrayList<Double> LTANs;
+
     public StandardFormProblemProperties(TradespaceSearchRequest tsr, Properties properties) {
 
         this.tsr = tsr;
@@ -109,15 +111,31 @@ public class StandardFormProblemProperties {
         /*
          * Set discrete decision options and get any special orbits to add to the decisions
          */
-        smas = discretizeSemiMajorAxes(tsr.getSatelliteOrbits().getSemiMajorAxisRange());
-        inclination = discretizeInclinations(tsr.getSatelliteOrbits().getInclinationRangesOfInterest());
-        specialOrbits = tsr.getSatelliteOrbits().getSpecialOrbits();
-        if (this.specialOrbits != null) {
-            for (int i = 0; i < specialOrbits.size(); i++) {
-                inclination.add(this.getSpecialOrbitInclinations(specialOrbits.get(i)));
+        if (tsr.getMissionConcept().getProblemType().equalsIgnoreCase("Walker")){
+            LTANs=new ArrayList<>();
+            smas = discretizeSemiMajorAxes(tsr.getSatelliteOrbits().getSemiMajorAxisRange());
+            inclination = discretizeInclinations(tsr.getSatelliteOrbits().getInclinationRangesOfInterest());
+            specialOrbits = tsr.getSatelliteOrbits().getSpecialOrbits();
+            if (this.specialOrbits != null) {
+                for (int i = 0; i < specialOrbits.size(); i++) {
+                    inclination.add(this.getSpecialOrbitInclinations(specialOrbits.get(i)));
+                }
             }
+            numberOfSats = discretizeSatellite(tsr.getSatelliteOrbits().getNumberOfNewSatellites());
+        }else if (tsr.getMissionConcept().getProblemType().equalsIgnoreCase("Train")){
+            inclination = new ArrayList<>();
+            specialOrbits = new ArrayList<>();
+            numberOfSats = new ArrayList<>();
+            smas = discretizeSemiMajorAxes(tsr.getSatelliteOrbits().getSemiMajorAxisRange());
+            LTANs=new ArrayList<>();
+            LTANs.add(10.5);
+            LTANs.add(11.0);
+            LTANs.add(11.5);
+
+        }else{
+            throw new IllegalArgumentException("No Problem Type found");
         }
-        numberOfSats = discretizeSatellite(tsr.getSatelliteOrbits().getNumberOfNewSatellites());
+
 
         /*
          * Existing satellites must be created after the db is initialized with the observatories and instruments.

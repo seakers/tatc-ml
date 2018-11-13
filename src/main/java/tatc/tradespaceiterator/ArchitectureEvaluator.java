@@ -6,7 +6,6 @@ import com.google.gson.JsonObject;
 import org.orekit.utils.Constants;
 import seakers.orekit.util.Units;
 import tatc.architecture.Architecture;
-import tatc.architecture.TATCWalker;
 import tatc.architecture.specifications.*;
 import tatc.architecture.variable.MonolithVariable;
 import tatc.evaluation.costandrisk.*;
@@ -82,7 +81,7 @@ public class ArchitectureEvaluator {
         } catch (ReductionMetricsException rmEx) {
             throw rmEx;
         } catch (Exception ex) {
-            Logger.getLogger(StandardFormProblemGA.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(StandardFormProblemGAWalker.class.getName()).log(Level.SEVERE, null, ex);
             throw new IllegalStateException("Evaluation of solution in R&M failed.", ex);
         }
     }
@@ -138,7 +137,7 @@ public class ArchitectureEvaluator {
         } catch (CostRiskException crEx) {
             throw crEx;
         } catch (Exception ex) {
-            Logger.getLogger(StandardFormProblemGA.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(StandardFormProblemGAWalker.class.getName()).log(Level.SEVERE, null, ex);
             throw new IllegalStateException("Evaluation of solution in CaR failed.", ex);
         }
     }

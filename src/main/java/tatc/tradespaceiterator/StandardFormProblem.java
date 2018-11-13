@@ -16,13 +16,13 @@ public class StandardFormProblem {
                 this.problem=new StandardFormProblemFullFactorial(this.properties);
                 break;
             case EPS:
-                this.problem=new StandardFormProblemMOEA(this.properties);
+                this.problem=new StandardFormMOEA(this.properties);
                 break;
             case AOS:
-                this.problem=new StandardFormProblemAOS(this.properties);
+                this.problem=new StandardFormAOS(this.properties);
                 break;
             case KDO:
-                this.problem=new StandardFormProblemKDO(this.properties);
+                this.problem=new StandardFormKDO(this.properties);
                 break;
         }
 

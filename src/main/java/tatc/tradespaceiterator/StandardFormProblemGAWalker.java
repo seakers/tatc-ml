@@ -30,32 +30,17 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public abstract class StandardFormProblemGA extends AbstractProblem implements StandardFormProblemImplementation {
+public class StandardFormProblemGAWalker extends AbstractProblem {
     StandardFormProblemProperties properties;
     ArchitectureEvaluator archEval;
-    int maxNFE;
-    int populationSize;
-    Initialization initialization;
-    Population population;
-    DominanceComparator comparator;
-    EpsilonBoxDominanceArchive archive;
-    TournamentSelection selection;
 
-    public StandardFormProblemGA(StandardFormProblemProperties properties){
+    public StandardFormProblemGAWalker(StandardFormProblemProperties properties){
         super(5, 2);
-        this.maxNFE=100;
         this.properties=properties;
         this.archEval=new ArchitectureEvaluator(properties);
-        this.populationSize=80;
-        this.initialization=new RandomInitialization(this, populationSize);
-        this.population=new Population();
-        this.comparator=new ParetoDominanceComparator();
-        this.archive=new EpsilonBoxDominanceArchive(new double[]{60, 10});
-        this.selection=new TournamentSelection(2, comparator);
+
     }
 
-
-    public abstract void start();
 
     @Override
     public void evaluate(Solution solution) {
@@ -162,10 +147,10 @@ public abstract class StandardFormProblemGA extends AbstractProblem implements S
             archEval.reductionAndMetrics(arch, newConcept);
             archEval.costAndRisk(arch, newConcept);
         } catch (ReductionMetricsException rmEx) {
-            Logger.getLogger(StandardFormProblemGA.class.getName()).log(Level.SEVERE, null, rmEx);
+            Logger.getLogger(StandardFormProblemGAWalker.class.getName()).log(Level.SEVERE, null, rmEx);
             throw new IllegalStateException("Evaluation of solution in R&M failed.", rmEx);
         } catch (CostRiskException crEx) {
-            Logger.getLogger(StandardFormProblemGA.class.getName()).log(Level.SEVERE, null, crEx);
+            Logger.getLogger(StandardFormProblemGAWalker.class.getName()).log(Level.SEVERE, null, crEx);
             throw new IllegalStateException("Evaluation of solution in C&R failed.", crEx);
         }
 
