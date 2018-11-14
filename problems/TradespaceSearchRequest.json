@@ -11,8 +11,8 @@
     "MissionDirector": "Academic",
     "Propulsion": 1,
     "UserDirectoryPreference": "False",
-    "SearchPreferences": "FF",
-    "ProblemType": "Train"
+    "SearchPreferences": "GA",
+    "ProblemType": "Walker"
   },
 
                      "SatelliteOrbits": {

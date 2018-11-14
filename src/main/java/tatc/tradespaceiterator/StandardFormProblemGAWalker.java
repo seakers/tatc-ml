@@ -1,14 +1,6 @@
 package tatc.tradespaceiterator;
 
-import org.moeaframework.core.EpsilonBoxDominanceArchive;
-import org.moeaframework.core.Initialization;
-import org.moeaframework.core.Population;
 import org.moeaframework.core.Solution;
-import org.moeaframework.core.comparator.DominanceComparator;
-import org.moeaframework.core.comparator.ParetoDominanceComparator;
-import org.moeaframework.core.operator.RandomInitialization;
-import org.moeaframework.core.operator.TournamentSelection;
-import org.moeaframework.core.variable.RealVariable;
 import org.moeaframework.problem.AbstractProblem;
 import org.orekit.utils.Constants;
 import seakers.conmop.util.Factor;
@@ -17,11 +9,11 @@ import tatc.architecture.StandardFormArchitecture;
 import tatc.architecture.TATCWalker;
 import tatc.architecture.specifications.MissionConcept;
 import tatc.architecture.variable.IntegerVariable;
+import tatc.architecture.variable.RealVariable;
 import tatc.evaluation.costandrisk.ResultOutput;
 import tatc.exceptions.CostRiskException;
 import tatc.exceptions.ReductionMetricsException;
 import tatc.util.JSONIO;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,7 +32,6 @@ public class StandardFormProblemGAWalker extends AbstractProblem {
         this.archEval=new ArchitectureEvaluator(properties);
 
     }
-
 
     @Override
     public void evaluate(Solution solution) {

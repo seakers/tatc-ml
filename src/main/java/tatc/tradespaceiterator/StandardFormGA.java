@@ -23,8 +23,8 @@ public abstract class StandardFormGA implements StandardFormProblemImplementatio
     public StandardFormGA(StandardFormProblemProperties properties) {
         this.properties=properties;
         this.problem=createProblem(properties);
-        this.maxNFE=100;
-        this.populationSize=80;
+        this.maxNFE=10;
+        this.populationSize=2;
         this.initialization=new RandomInitialization(this.problem, populationSize);
         this.population=new Population();
         this.comparator=new ParetoDominanceComparator();

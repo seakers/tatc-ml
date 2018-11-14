@@ -3,9 +3,11 @@ package tatc.tradespaceiterator;
 import org.moeaframework.algorithm.EpsilonMOEA;
 import org.moeaframework.core.*;
 import org.moeaframework.core.operator.CompoundVariation;
+import org.moeaframework.core.operator.OnePointCrossover;
 import org.moeaframework.core.operator.TwoPointCrossover;
 import seakers.architecture.operators.IntegerUM;
 import tatc.ResultIO;
+import tatc.tradespaceiterator.search.VariableMutation;
 
 import java.nio.file.Paths;
 import java.util.HashSet;
@@ -19,8 +21,8 @@ public class StandardFormMOEA extends StandardFormGA {
     public void start(){
         long startTime = System.nanoTime();
 
-        Variation crossover = new TwoPointCrossover(1);
-        Variation mutation = new IntegerUM(0.1);
+        Variation crossover = new OnePointCrossover(1);
+        Variation mutation = new VariableMutation(1);
         CompoundVariation operators = new CompoundVariation(crossover, mutation);
 
         //create MOEA
