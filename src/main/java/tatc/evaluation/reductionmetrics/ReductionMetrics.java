@@ -9,7 +9,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -21,7 +20,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.bodies.BodyShape;
 import org.orekit.bodies.GeodeticPoint;
@@ -70,7 +68,6 @@ import tatc.architecture.specifications.InstrumentSpecification;
 import tatc.architecture.specifications.MonoSpecification;
 import tatc.tradespaceiterator.TradespaceSearchRequest;
 import tatc.util.JSONIO;
-
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -190,7 +187,7 @@ public class ReductionMetrics extends AbstractModule {
             double mass = mono.getObservatorySpecification().getStartMass();
 
             //create satellite
-            //TO DO: this mass has to be passed to the propagator. the mass in the satellite object is not used.
+            //TODO: this mass has to be passed to the propagator. the mass in the satellite object is not used.
             Satellite sat = new Satellite(String.valueOf(i), orbit, null, payload,
                     receiver, transmitter, mass, 0);
 

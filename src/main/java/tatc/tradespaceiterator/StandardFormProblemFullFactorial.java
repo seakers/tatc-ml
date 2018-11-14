@@ -1,6 +1,5 @@
 package tatc.tradespaceiterator;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.hipparchus.util.FastMath;
 import org.orekit.errors.OrekitException;
 import org.orekit.time.AbsoluteDate;

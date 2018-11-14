@@ -12,7 +12,6 @@ import seakers.aos.operatorselectors.AdaptivePursuit;
 import seakers.aos.operatorselectors.OperatorSelector;
 import seakers.architecture.operators.IntegerUM;
 import tatc.ResultIO;
-
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;

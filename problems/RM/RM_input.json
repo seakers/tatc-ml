@@ -10,7 +10,9 @@
     "LaunchPreferences": "launchVehicles.txt",
     "MissionDirector": "Academic",
     "Propulsion": 1,
-    "SearchPreferences": "GA"
+    "SearchPreferences": "GA",
+    "UserDirectoryPreference": "False",
+    "ProblemType": "Walker"
   },
   "manifestOfMonoSpecifications": [
     {
@@ -25,12 +27,14 @@
         "LaunchPreferences": "launchVehicles.txt",
         "MissionDirector": "Academic",
         "Propulsion": 1,
-        "SearchPreferences": "GA"
+        "SearchPreferences": "GA",
+        "UserDirectoryPreference": "False",
+        "ProblemType": "Walker"
       },
       "satelliteOrbit": {
         "startEcc": 0.0,
         "startIncl": 30.000000000000004,
-        "startSMA": 6778.137,
+        "startSMA": 7178.137,
         "startPer": 0.0,
         "startRAAN": 0.0,
         "startTrueA": 0.0
