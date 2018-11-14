@@ -81,7 +81,7 @@ public class ArchitectureEvaluator {
         } catch (ReductionMetricsException rmEx) {
             throw rmEx;
         } catch (Exception ex) {
-            Logger.getLogger(StandardFormProblemGAWalker.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ArchitectureEvaluator.class.getName()).log(Level.SEVERE, null, ex);
             throw new IllegalStateException("Evaluation of solution in R&M failed.", ex);
         }
     }
@@ -137,7 +137,7 @@ public class ArchitectureEvaluator {
         } catch (CostRiskException crEx) {
             throw crEx;
         } catch (Exception ex) {
-            Logger.getLogger(StandardFormProblemGAWalker.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ArchitectureEvaluator.class.getName()).log(Level.SEVERE, null, ex);
             throw new IllegalStateException("Evaluation of solution in CaR failed.", ex);
         }
     }

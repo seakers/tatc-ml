@@ -59,8 +59,8 @@ public class StandardFormProblemGAWalker extends AbstractProblem {
         }
 
         //read in values
-        double sma = properties.smas.get(((IntegerVariable) soln.getVariable(0)).getValue());
-        double incl = properties.inclination.get(((IntegerVariable) soln.getVariable(1)).getValue());
+        double sma = ((StandardFormProblemPropertiesWalker)properties).smas.get(((IntegerVariable) soln.getVariable(0)).getValue());
+        double incl = ((StandardFormProblemPropertiesWalker)properties).inclination.get(((IntegerVariable) soln.getVariable(1)).getValue());
 
         //if there is an SSO, calculate it using the alt chosen
         //talk with Prachi here
@@ -69,7 +69,7 @@ public class StandardFormProblemGAWalker extends AbstractProblem {
             //incl = this.getSSOInclination(alt);
         }
 
-        int numSats = properties.numberOfSats.get(((IntegerVariable) soln.getVariable(2)).getValue());
+        int numSats = ((StandardFormProblemPropertiesWalker)properties).numberOfSats.get(((IntegerVariable) soln.getVariable(2)).getValue());
 
         //need to convert the real value that's between [0,1] to the number of planes.
         //The available number of planes is listed in the line below
@@ -173,9 +173,9 @@ public class StandardFormProblemGAWalker extends AbstractProblem {
     @Override
     public final Solution newSolution() {
         Solution sol = new StandardFormArchitecture(getNumberOfVariables(), getNumberOfObjectives(), properties.existingSatellites);
-        sol.setVariable(0, new IntegerVariable(0, 0, properties.smas.size() - 1));
-        sol.setVariable(1, new IntegerVariable(0, 0, properties.inclination.size() - 1));
-        sol.setVariable(2, new IntegerVariable(0, 0, properties.numberOfSats.size() - 1));
+        sol.setVariable(0, new IntegerVariable(0, 0, ((StandardFormProblemPropertiesWalker)properties).smas.size() - 1));
+        sol.setVariable(1, new IntegerVariable(0, 0, ((StandardFormProblemPropertiesWalker)properties).inclination.size() - 1));
+        sol.setVariable(2, new IntegerVariable(0, 0, ((StandardFormProblemPropertiesWalker)properties).numberOfSats.size() - 1));
         sol.setVariable(3, new RealVariable(0, 1)); //planes
         sol.setVariable(4, new RealVariable(0, 1)); //phasing
         return sol;

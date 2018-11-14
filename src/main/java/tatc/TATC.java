@@ -74,20 +74,20 @@ public class TATC {
         long startTime = System.nanoTime();
 
         if (tsr.getMissionConcept().getSearchPreferences() == 0) {
-            StandardFormProblem problem = new StandardFormProblem(tsr,properties, StandardFormProblem.ProblemType.FF);
+            StandardFormProblem problem = new StandardFormProblem(tsr,properties, StandardFormProblem.SearchType.FF);
             problem.run();
             problem.shutdown();
         } else if (tsr.getMissionConcept().getSearchPreferences() == 1){
-            StandardFormProblem problem = new StandardFormProblem(tsr,properties, StandardFormProblem.ProblemType.EPS);
+            StandardFormProblem problem = new StandardFormProblem(tsr,properties, StandardFormProblem.SearchType.EPS);
             problem.run();
             problem.shutdown();
         } else if (tsr.getMissionConcept().getSearchPreferences() == 2){
-            StandardFormProblem problem = new StandardFormProblem(tsr,properties, StandardFormProblem.ProblemType.AOS);
+            StandardFormProblem problem = new StandardFormProblem(tsr,properties, StandardFormProblem.SearchType.AOS);
             problem.run();
             problem.shutdown();
         }
         else if(tsr.getMissionConcept().getSearchPreferences() == 3){
-            StandardFormProblem problem = new StandardFormProblem(tsr,properties, StandardFormProblem.ProblemType.KDO);
+            StandardFormProblem problem = new StandardFormProblem(tsr,properties, StandardFormProblem.SearchType.KDO);
             problem.run();
             problem.shutdown();
         }

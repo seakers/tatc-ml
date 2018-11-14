@@ -59,9 +59,9 @@ public class StandardFormProblemFullFactorial implements StandardFormProblemImpl
             bufferedWriter.newLine();
 
             //convert arraylists to array in order to pass into fullFactWalker
-            Double[] smaArray = properties.smas.toArray(new Double[properties.smas.size()]);
-            Double[] incArray = properties.inclination.toArray(new Double[properties.inclination.size()]);
-            Integer[] numSatsArray = properties.numberOfSats.toArray(new Integer[properties.numberOfSats.size()]);
+            Double[] smaArray = ((StandardFormProblemPropertiesWalker)properties).smas.toArray(new Double[((StandardFormProblemPropertiesWalker)properties).smas.size()]);
+            Double[] incArray = ((StandardFormProblemPropertiesWalker)properties).inclination.toArray(new Double[((StandardFormProblemPropertiesWalker)properties).inclination.size()]);
+            Integer[] numSatsArray = ((StandardFormProblemPropertiesWalker)properties).numberOfSats.toArray(new Integer[((StandardFormProblemPropertiesWalker)properties).numberOfSats.size()]);
 
             ArrayList<WalkerParameters> constellationParams = EnumerateConstellations.fullFactWalker(smaArray, incArray, numSatsArray);
 
@@ -130,19 +130,19 @@ public class StandardFormProblemFullFactorial implements StandardFormProblemImpl
             //The LTANs should be defined somewhere in the tsr and ArrayList<Double> LTANs created in StandardFormProblemProperties
 
             bufferedWriter.append("Altitude[m],Inclination[deg],");
-            for (int i=0; i<properties.LTANs.size(); i++){
+            for (int i=0; i<((StandardFormProblemPropertiesTrain)properties).LTANs.size(); i++){
                 bufferedWriter.append(String.format("LTAN%d[hours],",i));
             }
             bufferedWriter.append("Avg Revisit Time[min],Avg Response Time[min],Cost[FY10$M]");
             bufferedWriter.newLine();
 
             //convert arraylists to array in order to pass into fullFactWalker
-            Double[] smaArray = properties.smas.toArray(new Double[properties.smas.size()]);
+            Double[] smaArray = ((StandardFormProblemPropertiesTrain)properties).smas.toArray(new Double[((StandardFormProblemPropertiesTrain)properties).smas.size()]);
 
             DSMSpecification dsmSpec = JSONIO.readJSON(properties.rm.getInputFile(), DSMSpecification.class);
             AbsoluteDate startDate = dsmSpec.getMissionConcept().getPerformancePeriod()[0];
 
-            ArrayList<TrainParameters> constellationParams=EnumerateConstellations.fullFactTrain(smaArray,properties.LTANs);
+            ArrayList<TrainParameters> constellationParams=EnumerateConstellations.fullFactTrain(smaArray,((StandardFormProblemPropertiesTrain)properties).LTANs);
 
             for (TrainParameters train : constellationParams) {
                 //create subspace directory
@@ -180,9 +180,9 @@ public class StandardFormProblemFullFactorial implements StandardFormProblemImpl
 
                 bufferedWriter.append(Double.toString(arch.getSma()) + ",");
                 bufferedWriter.append(Double.toString(arch.getInclination()) + ",");
-                for (int i=0; i<properties.LTANs.size(); i++){
-                    if (arch.getLTANs().contains(properties.LTANs.get(i))){
-                        bufferedWriter.append(Double.toString(properties.LTANs.get(i)) + ",");
+                for (int i=0; i<((StandardFormProblemPropertiesTrain)properties).LTANs.size(); i++){
+                    if (arch.getLTANs().contains(((StandardFormProblemPropertiesTrain)properties).LTANs.get(i))){
+                        bufferedWriter.append(Double.toString(((StandardFormProblemPropertiesTrain)properties).LTANs.get(i)) + ",");
                     }else {
                         bufferedWriter.append("NONE,");
                     }

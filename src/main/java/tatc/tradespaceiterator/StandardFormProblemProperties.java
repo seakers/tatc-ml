@@ -47,15 +47,7 @@ public class StandardFormProblemProperties {
 
     public final SearchDatabase db;
 
-    public final ArrayList<Double> smas;
 
-    public final ArrayList<Double> inclination;
-
-    public final ArrayList<Integer> numberOfSats;
-
-    public final ArrayList<SpecialOrbit> specialOrbits;
-
-    public final ArrayList<Double> LTANs;
 
     public StandardFormProblemProperties(TradespaceSearchRequest tsr, Properties properties) {
 
@@ -108,34 +100,6 @@ public class StandardFormProblemProperties {
          */
 //            this.lvs = new LaunchVehicleSelector(lvSpecs);
 
-        /*
-         * Set discrete decision options and get any special orbits to add to the decisions
-         */
-        if (tsr.getMissionConcept().getProblemType().equalsIgnoreCase("Walker")){
-            LTANs=new ArrayList<>();
-            smas = discretizeSemiMajorAxes(tsr.getSatelliteOrbits().getSemiMajorAxisRange());
-            inclination = discretizeInclinations(tsr.getSatelliteOrbits().getInclinationRangesOfInterest());
-            specialOrbits = tsr.getSatelliteOrbits().getSpecialOrbits();
-            if (this.specialOrbits != null) {
-                for (int i = 0; i < specialOrbits.size(); i++) {
-                    inclination.add(this.getSpecialOrbitInclinations(specialOrbits.get(i)));
-                }
-            }
-            numberOfSats = discretizeSatellite(tsr.getSatelliteOrbits().getNumberOfNewSatellites());
-        }else if (tsr.getMissionConcept().getProblemType().equalsIgnoreCase("Train")){
-            inclination = new ArrayList<>();
-            specialOrbits = new ArrayList<>();
-            numberOfSats = new ArrayList<>();
-            smas = discretizeSemiMajorAxes(tsr.getSatelliteOrbits().getSemiMajorAxisRange());
-            LTANs=new ArrayList<>();
-            LTANs.add(10.5);
-            LTANs.add(11.0);
-            LTANs.add(11.5);
-
-        }else{
-            throw new IllegalArgumentException("No Problem Type found");
-        }
-
 
         /*
          * Existing satellites must be created after the db is initialized with the observatories and instruments.
@@ -164,7 +128,7 @@ public class StandardFormProblemProperties {
     /**
      * This method gets inclinations for special orbits
      */
-    private double getSpecialOrbitInclinations(SpecialOrbit special) {
+    protected double getSpecialOrbitInclinations(SpecialOrbit special) {
 
         switch (special.toString()) {
             //identifier of SSO = -1 so that we can calculate it using alt later on
@@ -186,7 +150,7 @@ public class StandardFormProblemProperties {
      *
      * @return the discrete values for smas
      */
-    private ArrayList<Double> discretizeSemiMajorAxes(Bounds<Double> bounds) {
+    protected ArrayList<Double> discretizeSemiMajorAxes(Bounds<Double> bounds) {
 
         double l = bounds.getLowerBound();
         double u = bounds.getUpperBound();
@@ -204,7 +168,7 @@ public class StandardFormProblemProperties {
      *
      * @return the discrete values for inclinations
      */
-    private ArrayList<Double> discretizeInclinations(Bounds<Double> bounds) {
+    protected ArrayList<Double> discretizeInclinations(Bounds<Double> bounds) {
 
         double l = FastMath.toDegrees(bounds.getLowerBound());
         double u = FastMath.toDegrees(bounds.getUpperBound());
@@ -222,7 +186,7 @@ public class StandardFormProblemProperties {
      *
      * @return the discrete values for number of satellites
      */
-    private ArrayList<Integer> discretizeSatellite(Bounds<Integer> bounds) {
+    protected ArrayList<Integer> discretizeSatellite(Bounds<Integer> bounds) {
         int l = bounds.getLowerBound();
         int u = bounds.getUpperBound();
         ArrayList<Integer> sats = new ArrayList<>();
