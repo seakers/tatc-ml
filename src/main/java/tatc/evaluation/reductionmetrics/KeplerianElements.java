@@ -11,6 +11,7 @@ import org.orekit.errors.OrekitException;
 import org.orekit.frames.FramesFactory;
 import org.orekit.orbits.KeplerianOrbit;
 import org.orekit.orbits.PositionAngle;
+import org.orekit.time.AbsoluteDate;
 import org.orekit.utils.Constants;
 import seakers.orekit.util.Units;
 import tatc.architecture.specifications.SatelliteOrbitSpecification;
@@ -105,16 +106,6 @@ public class KeplerianElements extends KeplerianOrbit {
                             + "Found %f", Units.rad2deg(this.getI())));
         }
         return true;
-    }
-
-    @Override
-    public AbsoluteDate getDate() {
-        try {
-            return AbsoluteDate.cast(super.getDate());
-        } catch (OrekitException ex) {
-            Logger.getLogger(KeplerianElements.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
     }
 
     /**

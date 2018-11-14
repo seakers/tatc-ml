@@ -166,8 +166,7 @@ public class ReductionMetrics extends AbstractModule {
             Set<GndStation> groundStations = loadGroundStations(
                     mono.getMissionConcept().getGroundStationSpecifications(), earthShape);
 
-            Orbit orbit = new KeplerianElements(tatc.evaluation.reductionmetrics.AbsoluteDate.cast(startDate),
-                    mono.getSatelliteOrbit());
+            Orbit orbit = new KeplerianElements(startDate, mono.getSatelliteOrbit());
 
             //load communication bands
             String[] bandStr = mono.getObservatorySpecification().getCommBandTypes().split("\\s");

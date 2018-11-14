@@ -87,11 +87,13 @@ public class MissionConcept {
 
     private final String UserDirectoryPreference;
 
+    private final String ProblemType;
+
     public MissionConcept(int StartEpoch, String PerformancePeriod,
             String MissionDuration, int Granularity, String AreaOfInterest,
             String ObjectsOfInterest, String GroundStationOptions,
             String LaunchPreferences, String MissionDirector, int Propulsion,
-            String UserDirectoryPreference,String SearchPreferences) {
+            String UserDirectoryPreference,String SearchPreferences, String ProblemType) {
         this.StartEpoch = StartEpoch;
         this.PerformancePeriod = PerformancePeriod;
         this.MissionDuration = MissionDuration;
@@ -104,10 +106,11 @@ public class MissionConcept {
         this.Propulsion = Propulsion;
         this.UserDirectoryPreference = UserDirectoryPreference;
         this.SearchPreferences = SearchPreferences;
+        this.ProblemType=ProblemType;
     }
 
     public AbsoluteDate getStartEpoch() throws OrekitException {
-        AbsoluteDate zero = new AbsoluteDate(0, 1, 1, 0, 0, 0.0, TimeScalesFactory.getUTC());
+        AbsoluteDate zero = new AbsoluteDate(1970, 1, 1, 0, 0, 0.0, TimeScalesFactory.getUTC());
         return zero.shiftedBy(StartEpoch);
     }
 
@@ -340,6 +343,8 @@ public class MissionConcept {
             return 1;
         }
     }
+
+    public String getProblemType(){ return ProblemType; }
     
     /**
      * Creates a new instance of this mission concept
@@ -350,7 +355,7 @@ public class MissionConcept {
         return new MissionConcept(StartEpoch, PerformancePeriod,
                 MissionDuration, Granularity, AreaOfInterest, ObjectsOfInterest,
                 GroundStationOptions, LaunchPreferences, MissionDirector,
-                Propulsion, UserDirectoryPreference,SearchPreferences);
+                Propulsion, UserDirectoryPreference,SearchPreferences,ProblemType);
     }
 
 }

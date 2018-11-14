@@ -2,11 +2,11 @@ package tatc.tradespaceiterator;
 
 import org.hipparchus.util.FastMath;
 import org.orekit.errors.OrekitException;
+import org.orekit.time.AbsoluteDate;
 import seakers.conmop.util.Bounds;
 import tatc.architecture.specifications.*;
 import tatc.architecture.variable.MonolithVariable;
 import tatc.evaluation.costandrisk.CostRiskSeak;
-import tatc.evaluation.reductionmetrics.AbsoluteDate;
 import tatc.evaluation.reductionmetrics.ReductionMetrics;
 import java.io.File;
 import java.util.ArrayList;
@@ -47,13 +47,7 @@ public class StandardFormProblemProperties {
 
     public final SearchDatabase db;
 
-    public final ArrayList<Double> smas;
 
-    public final ArrayList<Double> inclination;
-
-    public final ArrayList<Integer> numberOfSats;
-
-    public final ArrayList<SpecialOrbit> specialOrbits;
 
     public StandardFormProblemProperties(TradespaceSearchRequest tsr, Properties properties) {
 
@@ -84,72 +78,57 @@ public class StandardFormProblemProperties {
         /*
          * Initializing the database of specifications
          */
-        try {
-            this.db = SearchDatabase.getInstance();
-            for (ObservatorySpecification spec : tsr.getObervatorySpecifications()) {
-                db.addObservatorySpecification(spec);
-            }
-            for (InstrumentSpecification spec : tsr.getInstrumentSpecifications()) {
-                db.addInstrumentSpecification(spec);
-            }
-            for (GroundStationSpecification spec : tsr.getMissionConcept().getGroundStationSpecifications()) {
-                db.addGroundStationSpecification(spec);
-            }
-            ArrayList<LaunchVehicleSpecification> lvSpecs = new ArrayList();
-            for (LaunchVehicleSpecification spec : tsr.getLaunchVehicleSpecifications()) {
-                db.addLaunchVehicleSpecification(spec);
-                lvSpecs.add(spec);
-            }
 
-            /*
-             * TODO: Launch Vehicle selection process goes here
-             */
+        this.db = SearchDatabase.getInstance();
+        for (ObservatorySpecification spec : tsr.getObervatorySpecifications()) {
+            db.addObservatorySpecification(spec);
+        }
+        for (InstrumentSpecification spec : tsr.getInstrumentSpecifications()) {
+            db.addInstrumentSpecification(spec);
+        }
+        for (GroundStationSpecification spec : tsr.getMissionConcept().getGroundStationSpecifications()) {
+            db.addGroundStationSpecification(spec);
+        }
+        ArrayList<LaunchVehicleSpecification> lvSpecs = new ArrayList();
+        for (LaunchVehicleSpecification spec : tsr.getLaunchVehicleSpecifications()) {
+            db.addLaunchVehicleSpecification(spec);
+            lvSpecs.add(spec);
+        }
+
+        /*
+         * TODO: Launch Vehicle selection process goes here
+         */
 //            this.lvs = new LaunchVehicleSelector(lvSpecs);
 
-            /*
-             * Set discrete decision options and get any special orbits to add to the decisions
-             */
-            smas = discretizeSemiMajorAxes(tsr.getSatelliteOrbits().getSemiMajorAxisRange());
-            inclination = discretizeInclinations(tsr.getSatelliteOrbits().getInclinationRangesOfInterest());
-            specialOrbits = tsr.getSatelliteOrbits().getSpecialOrbits();
-            if (this.specialOrbits != null) {
-                for (int i = 0; i < specialOrbits.size(); i++) {
-                    inclination.add(this.getSpecialOrbitInclinations(specialOrbits.get(i)));
-                }
-            }
-            numberOfSats = discretizeSatellite(tsr.getSatelliteOrbits().getNumberOfNewSatellites());
 
-            /*
-             * Existing satellites must be created after the db is initialized with the observatories and instruments.
-             * More observatories and instruments will be added to the database but exclusively for the existing satellites.
-             */
-            AbsoluteDate startDate = AbsoluteDate.cast(
-                    tsr.getMissionConcept().getPerformancePeriod()[0]);
-            this.existingSatellites = tsr.getSatelliteOrbits().
-                    getExistingSatellites(startDate);
+        /*
+         * Existing satellites must be created after the db is initialized with the observatories and instruments.
+         * More observatories and instruments will be added to the database but exclusively for the existing satellites.
+         */
 
-            /*
-             * Propagate and save the access times of the existing satellitess
-             */
-            Logger.getGlobal().finer("Propagating and saving accesses for existing satellites...");
-            properties.setProperty("fov.saveToDB", "true");
+        this.existingSatellites = tsr.getSatelliteOrbits().
+                getExistingSatellites();
 
-            /*
-             * Don't save the access of the new satellites entering the architecture
-             */
-            properties.setProperty("fov.saveToDB", "false");
+        /*
+         * Propagate and save the access times of the existing satellitess
+         */
+        Logger.getGlobal().finer("Propagating and saving accesses for existing satellites...");
+        properties.setProperty("fov.saveToDB", "true");
 
-            evalCounter = 0;
+        /*
+         * Don't save the access of the new satellites entering the architecture
+         */
+        properties.setProperty("fov.saveToDB", "false");
 
-        } catch (OrekitException ex) {
-            throw new IllegalArgumentException("Invalid tradespace search request", ex);
-        }
+        evalCounter = 0;
+
+
     }
 
     /**
      * This method gets inclinations for special orbits
      */
-    private double getSpecialOrbitInclinations(SpecialOrbit special) {
+    protected double getSpecialOrbitInclinations(SpecialOrbit special) {
 
         switch (special.toString()) {
             //identifier of SSO = -1 so that we can calculate it using alt later on
@@ -171,7 +150,7 @@ public class StandardFormProblemProperties {
      *
      * @return the discrete values for smas
      */
-    private ArrayList<Double> discretizeSemiMajorAxes(Bounds<Double> bounds) {
+    protected ArrayList<Double> discretizeSemiMajorAxes(Bounds<Double> bounds) {
 
         double l = bounds.getLowerBound();
         double u = bounds.getUpperBound();
@@ -189,7 +168,7 @@ public class StandardFormProblemProperties {
      *
      * @return the discrete values for inclinations
      */
-    private ArrayList<Double> discretizeInclinations(Bounds<Double> bounds) {
+    protected ArrayList<Double> discretizeInclinations(Bounds<Double> bounds) {
 
         double l = FastMath.toDegrees(bounds.getLowerBound());
         double u = FastMath.toDegrees(bounds.getUpperBound());
@@ -207,7 +186,7 @@ public class StandardFormProblemProperties {
      *
      * @return the discrete values for number of satellites
      */
-    private ArrayList<Integer> discretizeSatellite(Bounds<Integer> bounds) {
+    protected ArrayList<Integer> discretizeSatellite(Bounds<Integer> bounds) {
         int l = bounds.getLowerBound();
         int u = bounds.getUpperBound();
         ArrayList<Integer> sats = new ArrayList<>();

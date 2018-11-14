@@ -30,32 +30,17 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public abstract class StandardFormProblemGA extends AbstractProblem implements StandardFormProblemImplementation {
+public class StandardFormProblemGAWalker extends AbstractProblem {
     StandardFormProblemProperties properties;
     ArchitectureEvaluator archEval;
-    int maxNFE;
-    int populationSize;
-    Initialization initialization;
-    Population population;
-    DominanceComparator comparator;
-    EpsilonBoxDominanceArchive archive;
-    TournamentSelection selection;
 
-    public StandardFormProblemGA(StandardFormProblemProperties properties){
+    public StandardFormProblemGAWalker(StandardFormProblemProperties properties){
         super(5, 2);
-        this.maxNFE=100;
         this.properties=properties;
         this.archEval=new ArchitectureEvaluator(properties);
-        this.populationSize=80;
-        this.initialization=new RandomInitialization(this, populationSize);
-        this.population=new Population();
-        this.comparator=new ParetoDominanceComparator();
-        this.archive=new EpsilonBoxDominanceArchive(new double[]{60, 10});
-        this.selection=new TournamentSelection(2, comparator);
+
     }
 
-
-    public abstract void start();
 
     @Override
     public void evaluate(Solution solution) {
@@ -74,8 +59,8 @@ public abstract class StandardFormProblemGA extends AbstractProblem implements S
         }
 
         //read in values
-        double sma = properties.smas.get(((IntegerVariable) soln.getVariable(0)).getValue());
-        double incl = properties.inclination.get(((IntegerVariable) soln.getVariable(1)).getValue());
+        double sma = ((StandardFormProblemPropertiesWalker)properties).smas.get(((IntegerVariable) soln.getVariable(0)).getValue());
+        double incl = ((StandardFormProblemPropertiesWalker)properties).inclination.get(((IntegerVariable) soln.getVariable(1)).getValue());
 
         //if there is an SSO, calculate it using the alt chosen
         //talk with Prachi here
@@ -84,7 +69,7 @@ public abstract class StandardFormProblemGA extends AbstractProblem implements S
             //incl = this.getSSOInclination(alt);
         }
 
-        int numSats = properties.numberOfSats.get(((IntegerVariable) soln.getVariable(2)).getValue());
+        int numSats = ((StandardFormProblemPropertiesWalker)properties).numberOfSats.get(((IntegerVariable) soln.getVariable(2)).getValue());
 
         //need to convert the real value that's between [0,1] to the number of planes.
         //The available number of planes is listed in the line below
@@ -162,10 +147,10 @@ public abstract class StandardFormProblemGA extends AbstractProblem implements S
             archEval.reductionAndMetrics(arch, newConcept);
             archEval.costAndRisk(arch, newConcept);
         } catch (ReductionMetricsException rmEx) {
-            Logger.getLogger(StandardFormProblemGA.class.getName()).log(Level.SEVERE, null, rmEx);
+            Logger.getLogger(StandardFormProblemGAWalker.class.getName()).log(Level.SEVERE, null, rmEx);
             throw new IllegalStateException("Evaluation of solution in R&M failed.", rmEx);
         } catch (CostRiskException crEx) {
-            Logger.getLogger(StandardFormProblemGA.class.getName()).log(Level.SEVERE, null, crEx);
+            Logger.getLogger(StandardFormProblemGAWalker.class.getName()).log(Level.SEVERE, null, crEx);
             throw new IllegalStateException("Evaluation of solution in C&R failed.", crEx);
         }
 
@@ -188,9 +173,9 @@ public abstract class StandardFormProblemGA extends AbstractProblem implements S
     @Override
     public final Solution newSolution() {
         Solution sol = new StandardFormArchitecture(getNumberOfVariables(), getNumberOfObjectives(), properties.existingSatellites);
-        sol.setVariable(0, new IntegerVariable(0, 0, properties.smas.size() - 1));
-        sol.setVariable(1, new IntegerVariable(0, 0, properties.inclination.size() - 1));
-        sol.setVariable(2, new IntegerVariable(0, 0, properties.numberOfSats.size() - 1));
+        sol.setVariable(0, new IntegerVariable(0, 0, ((StandardFormProblemPropertiesWalker)properties).smas.size() - 1));
+        sol.setVariable(1, new IntegerVariable(0, 0, ((StandardFormProblemPropertiesWalker)properties).inclination.size() - 1));
+        sol.setVariable(2, new IntegerVariable(0, 0, ((StandardFormProblemPropertiesWalker)properties).numberOfSats.size() - 1));
         sol.setVariable(3, new RealVariable(0, 1)); //planes
         sol.setVariable(4, new RealVariable(0, 1)); //phasing
         return sol;

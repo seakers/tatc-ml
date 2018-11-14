@@ -1,16 +1,9 @@
 package tatc.tradespaceiterator;
 
 import org.moeaframework.algorithm.EpsilonMOEA;
-import org.moeaframework.core.EpsilonBoxDominanceArchive;
-import org.moeaframework.core.Initialization;
-import org.moeaframework.core.Population;
 import org.moeaframework.core.Variation;
-import org.moeaframework.core.comparator.DominanceComparator;
-import org.moeaframework.core.comparator.ParetoDominanceComparator;
 import org.moeaframework.core.operator.CompoundVariation;
 import org.moeaframework.core.operator.OnePointCrossover;
-import org.moeaframework.core.operator.RandomInitialization;
-import org.moeaframework.core.operator.TournamentSelection;
 import org.moeaframework.core.operator.binary.BitFlip;
 import org.moeaframework.util.TypedProperties;
 import seakers.aos.aos.AOSMOEA;
@@ -30,8 +23,8 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class StandardFormProblemKDO extends StandardFormProblemGA {
-    public StandardFormProblemKDO(StandardFormProblemProperties properties) {
+public class StandardFormKDO extends StandardFormGA {
+    public StandardFormKDO(StandardFormProblemProperties properties) {
         super(properties);
     }
 
@@ -92,7 +85,7 @@ public class StandardFormProblemKDO extends StandardFormProblemGA {
         SetImprovementDominance creditAssignment3 = new SetImprovementDominance(archive, 1, 0);
 
         //create AOS
-        EpsilonMOEA emoea3 = new EpsilonMOEA(this, population, archive,
+        EpsilonMOEA emoea3 = new EpsilonMOEA(problem, population, archive,
                 selection, null, initialization, comparator);
         AOSVariation aosStrategy3 = new AOSVariationSI(operatorSelector3, creditAssignment3, populationSize);
         AOSMOEA aos3 = new AOSMOEA(emoea3, aosStrategy3, true);

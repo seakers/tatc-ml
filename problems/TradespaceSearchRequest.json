@@ -1,22 +1,24 @@
 {
- "MissionConcepts": {
-                     "StartEpoch"          : 1455213665               ,
-                     "PerformancePeriod"   : "0:604800"  ,
-                     "MissionDuration"     : "999999999"  ,
-                     "Granularity"         : 30 ,
-                     "AreaOfInterest"      : "-30:30"  ,
-                     "ObjectsOfInterest"   : "Sun Moon"               ,
-                     "GroundStationOptions": "NENgov"      ,
-                     "LaunchPreferences"   : "launchVehicles.txt",
-                     "MissionDirector"     : "Academic",
-                     "Propulsion"          : 1,
-                     "SearchPreferences"   : "GA"
-                    },
+  "MissionConcepts": {
+    "StartEpoch": 1455213665,
+    "PerformancePeriod": "0:604800",
+    "MissionDuration": "999999999",
+    "Granularity": 30,
+    "AreaOfInterest": "-30:30",
+    "ObjectsOfInterest": "Sun Moon",
+    "GroundStationOptions": "NENgov",
+    "LaunchPreferences": "launchVehicles.txt",
+    "MissionDirector": "Academic",
+    "Propulsion": 1,
+    "UserDirectoryPreference": "False",
+    "SearchPreferences": "FF",
+    "ProblemType": "Train"
+  },
 
                      "SatelliteOrbits": {
                      "ExistingSatelliteOptions"   : "ExistingSatelliteListEx.txt",
                      "NumberOfNewSatellites"      : "1:2"                    ,
-                     "AltitudeRangesOfInterest"   : "400:500"              ,
+                     "AltitudeRangesOfInterest"   : "400:800"              ,
                      "InclinationRangesOfInterest": "30:40"     ,
                      "SpecialOrbits"              : "SSO"                         ,
                      "PropagationFidelity"        : 0

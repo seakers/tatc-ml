@@ -9,20 +9,28 @@ public class StandardFormProblem {
 
     private StandardFormProblemProperties properties;
 
-    public StandardFormProblem(TradespaceSearchRequest tsr, Properties properties, ProblemType type) {
-        this.properties=new StandardFormProblemProperties(tsr,properties);
+    public StandardFormProblem(TradespaceSearchRequest tsr, Properties properties, SearchType type) {
+        switch (tsr.getMissionConcept().getProblemType()){
+            case "Walker":
+                this.properties=new StandardFormProblemPropertiesWalker(tsr,properties);
+                break;
+            case "Train":
+                this.properties=new StandardFormProblemPropertiesTrain(tsr,properties);
+                break;
+        }
+
         switch (type){
             case FF:
                 this.problem=new StandardFormProblemFullFactorial(this.properties);
                 break;
             case EPS:
-                this.problem=new StandardFormProblemMOEA(this.properties);
+                this.problem=new StandardFormMOEA(this.properties);
                 break;
             case AOS:
-                this.problem=new StandardFormProblemAOS(this.properties);
+                this.problem=new StandardFormAOS(this.properties);
                 break;
             case KDO:
-                this.problem=new StandardFormProblemKDO(this.properties);
+                this.problem=new StandardFormKDO(this.properties);
                 break;
         }
 
@@ -40,7 +48,7 @@ public class StandardFormProblem {
         properties.rm.shutdown();
     }
 
-    public enum ProblemType{
+    public enum SearchType {
         FF,
         EPS,
         AOS,
